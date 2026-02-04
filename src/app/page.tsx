@@ -4,7 +4,7 @@ import {useEffect, useMemo, useState} from "react";
 import {Input} from "baseui/input";
 import {Select} from "baseui/select";
 import {DatePicker} from "baseui/datepicker";
-import {Dialog} from "@base-ui/react/dialog";
+import {Drawer} from "baseui/drawer";
 
 const countryCodes = [
   "AF",
@@ -316,14 +316,19 @@ const rainbowColors = [
 function DotsGrid({
   total,
   filled,
-  dotStyle
+  dotStyle,
+  perRow
 }: {
   total: number;
   filled: number;
   dotStyle: "classic" | "rainbow";
+  perRow: number;
 }) {
   return (
-    <div className="flex flex-wrap gap-3">
+    <div
+      className="grid gap-3"
+      style={{gridTemplateColumns: `repeat(${perRow}, 0.75rem)`}}
+    >
       {Array.from({length: total}).map((_, index) => (
         <span
           key={index}
@@ -432,8 +437,6 @@ export default function Home() {
     if (!dob) {
       return {
         percent: 0,
-        monthsPassed: 0,
-        totalMonths: expectancy * 12,
         weeksPassed: 0,
         totalWeeks: expectancy * 52
       };
@@ -441,17 +444,12 @@ export default function Home() {
     const now = new Date();
     const ageMs = now.getTime() - dob.getTime();
     const ageYears = ageMs / (1000 * 60 * 60 * 24 * 365.25);
-    const totalMonths = expectancy * 12;
     const totalWeeks = expectancy * 52;
-    const ageMonths = ageYears * 12;
     const ageWeeks = ageYears * 52;
-    const percent = clamp(Math.round((ageMonths / totalMonths) * 100), 0, 100);
-    const monthsPassed = clamp(Math.floor(ageMonths), 0, totalMonths);
+    const percent = clamp(Math.round((ageWeeks / totalWeeks) * 100), 0, 100);
     const weeksPassed = clamp(Math.floor(ageWeeks), 0, totalWeeks);
     return {
       percent,
-      monthsPassed,
-      totalMonths,
       weeksPassed,
       totalWeeks
     };
@@ -464,16 +462,20 @@ export default function Home() {
     >
       <div className="mb-3 flex items-center justify-between">
         <div>
-          <Dialog.Title className="text-lg font-semibold text-neutral-900 dark:text-white">
+          <h2 className="text-lg font-semibold text-neutral-900 dark:text-white">
             Profile details
-          </Dialog.Title>
-          <Dialog.Description className="text-sm text-neutral-500 dark:text-neutral-400">
+          </h2>
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">
             Update your basics one step at a time.
-          </Dialog.Description>
+          </p>
         </div>
-        <Dialog.Close className="rounded-full border border-neutral-200 px-2 py-1 text-xs font-semibold text-neutral-600 transition hover:border-neutral-300 hover:text-neutral-900 dark:border-neutral-700 dark:text-neutral-300 dark:hover:border-neutral-500 dark:hover:text-white">
+        <button
+          type="button"
+          onClick={() => setIsModalOpen(false)}
+          className="rounded-full border border-neutral-200 px-2 py-1 text-xs font-semibold text-neutral-600 transition hover:border-neutral-300 hover:text-neutral-900 dark:border-neutral-700 dark:text-neutral-300 dark:hover:border-neutral-500 dark:hover:text-white"
+        >
           Close
-        </Dialog.Close>
+        </button>
       </div>
       <div className="grid gap-4">
         <div>
@@ -583,61 +585,71 @@ export default function Home() {
 
   return (
     <main className="px-6 py-12">
-      <Dialog.Root open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <section className="mx-auto flex w-full max-w-[820px] flex-col gap-6">
-          <div className="flex items-center justify-between">
-            <h1 className="text-sm">Life Dots</h1>
-            <Dialog.Trigger
-              className="inline-flex items-center justify-center rounded-full border border-neutral-200 p-2 text-neutral-600 transition hover:border-neutral-300 hover:text-neutral-900 dark:border-neutral-700 dark:text-neutral-300 dark:hover:border-neutral-500 dark:hover:text-white"
-              aria-label="Open profile settings"
+      <section className="mx-auto flex w-full max-w-[820px] flex-col gap-6">
+        <div className="text-center">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-400">
+            Life in Weeks
+          </p>
+          <div className="mt-3 text-sm font-semibold uppercase tracking-widest text-neutral-700 dark:text-neutral-200">
+            {name || "Add your name in settings"}
+          </div>
+        </div>
+        <div className="flex items-center justify-between">
+          <h1 className="text-sm">Life Dots</h1>
+          <button
+            type="button"
+            onClick={() => setIsModalOpen(true)}
+            className="inline-flex items-center justify-center rounded-full border border-neutral-200 p-2 text-neutral-600 transition hover:border-neutral-300 hover:text-neutral-900 dark:border-neutral-700 dark:text-neutral-300 dark:hover:border-neutral-500 dark:hover:text-white"
+            aria-label="Open profile settings"
+          >
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 24 24"
+              className="h-4 w-4"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
             >
-              <svg
-                aria-hidden="true"
-                viewBox="0 0 24 24"
-                className="h-4 w-4"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M10.5 6h3m-7.5 4h11m-7.5 4h3m-8 4h10M4 4h16v16H4z"
-                />
-              </svg>
-            </Dialog.Trigger>
-          </div>
-
-          <div className="rounded-md bg-white p-4 dark:bg-neutral-900">
-            <div className="flex flex-wrap justify-end gap-x-3 text-sm font-medium text-neutral-500 dark:text-neutral-400">
-              <span>
-                Months: {progress.monthsPassed}/{progress.totalMonths}
-              </span>
-              <span>
-                Weeks: {progress.weeksPassed}/{progress.totalWeeks}
-              </span>
-              <span>{progress.percent}%</span>
-            </div>
-            <div className="mt-6">
-              <DotsGrid
-                total={progress.totalMonths}
-                filled={progress.monthsPassed}
-                dotStyle={dotStyle}
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M10.5 6h3m-7.5 4h11m-7.5 4h3m-8 4h10M4 4h16v16H4z"
               />
-            </div>
-            <div className="mt-4 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
-              {name ? `Name: ${name}` : "Add your name in settings"}
-            </div>
-          </div>
-        </section>
+            </svg>
+          </button>
+        </div>
 
-        <Dialog.Portal>
-          <Dialog.Backdrop className="fixed inset-0 bg-neutral-950/60" />
-          <Dialog.Viewport className="fixed inset-0 z-50 flex items-center justify-center px-6 py-10">
-            <Dialog.Popup className="w-full max-w-[520px]">{formCard}</Dialog.Popup>
-          </Dialog.Viewport>
-        </Dialog.Portal>
-      </Dialog.Root>
+        <div className="rounded-md bg-white p-4 dark:bg-neutral-900">
+          <div className="flex flex-wrap justify-end gap-x-3 text-sm font-medium text-neutral-500 dark:text-neutral-400">
+            <span>
+              Weeks: {progress.weeksPassed}/{progress.totalWeeks}
+            </span>
+            <span>{progress.percent}%</span>
+          </div>
+          <div className="mt-6 overflow-x-auto">
+            <DotsGrid
+              total={progress.totalWeeks}
+              filled={progress.weeksPassed}
+              dotStyle={dotStyle}
+              perRow={52}
+            />
+          </div>
+        </div>
+      </section>
+
+      <Drawer
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        anchor="right"
+        size="520px"
+        animate
+        autoFocus
+        closeable
+        showBackdrop
+        overrides={{}}
+      >
+        <div className="w-full max-w-[520px] p-6">{formCard}</div>
+      </Drawer>
     </main>
   );
 }
