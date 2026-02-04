@@ -11,7 +11,10 @@ function createStyletronEngine() {
   if (typeof window === "undefined") {
     return new Server();
   }
-  return new Client({hydrate: document.getElementsByClassName("_styletron_hydrate_")});
+  const hydrate = document.getElementsByClassName(
+    "_styletron_hydrate_"
+  ) as HTMLCollectionOf<HTMLStyleElement>;
+  return new Client({hydrate});
 }
 
 export default function Providers({children}: {children: ReactNode}) {
@@ -19,7 +22,6 @@ export default function Providers({children}: {children: ReactNode}) {
 
   useServerInsertedHTML(() => {
     if (styletron instanceof Server) {
-      // @ts-expect-error Styletron server css api
       return <style dangerouslySetInnerHTML={{__html: styletron.getCss()}} />;
     }
     return null;
