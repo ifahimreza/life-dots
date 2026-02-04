@@ -349,6 +349,12 @@ export default function Home() {
   const [lifeExpectancy, setLifeExpectancy] = useState(80);
   const [hasCustomExpectancy, setHasCustomExpectancy] = useState(false);
   const [dotStyle, setDotStyle] = useState<"classic" | "rainbow">("classic");
+  const [draftName, setDraftName] = useState("");
+  const [draftCountry, setDraftCountry] = useState<string>("");
+  const [draftDob, setDraftDob] = useState<Date | null>(null);
+  const [draftLifeExpectancy, setDraftLifeExpectancy] = useState(80);
+  const [draftHasCustomExpectancy, setDraftHasCustomExpectancy] = useState(false);
+  const [draftDotStyle, setDraftDotStyle] = useState<"classic" | "rainbow">("classic");
   const [mounted, setMounted] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -392,6 +398,34 @@ export default function Home() {
     }
   }, [countryOption?.expectancy, hasCustomExpectancy]);
 
+  const draftCountryOption = countryOptions.find((option) => option.id === draftCountry);
+  useEffect(() => {
+    if (!draftHasCustomExpectancy) {
+      setDraftLifeExpectancy(draftCountryOption?.expectancy ?? 80);
+    }
+  }, [draftCountryOption?.expectancy, draftHasCustomExpectancy]);
+
+  useEffect(() => {
+    if (!isModalOpen) return;
+    setDraftName(name);
+    setDraftCountry(country);
+    setDraftDob(dob);
+    setDraftLifeExpectancy(lifeExpectancy);
+    setDraftHasCustomExpectancy(hasCustomExpectancy);
+    setDraftDotStyle(dotStyle);
+  }, [isModalOpen, name, country, dob, lifeExpectancy, hasCustomExpectancy, dotStyle]);
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setName(draftName.trim());
+    setCountry(draftCountry);
+    setDob(draftDob);
+    setLifeExpectancy(draftLifeExpectancy);
+    setHasCustomExpectancy(draftHasCustomExpectancy);
+    setDotStyle(draftDotStyle);
+    setIsModalOpen(false);
+  };
+
   const expectancy = clamp(lifeExpectancy, 1, 120);
 
   const progress = useMemo(() => {
@@ -399,26 +433,36 @@ export default function Home() {
       return {
         percent: 0,
         monthsPassed: 0,
-        totalMonths: expectancy * 12
+        totalMonths: expectancy * 12,
+        weeksPassed: 0,
+        totalWeeks: expectancy * 52
       };
     }
     const now = new Date();
     const ageMs = now.getTime() - dob.getTime();
     const ageYears = ageMs / (1000 * 60 * 60 * 24 * 365.25);
     const totalMonths = expectancy * 12;
+    const totalWeeks = expectancy * 52;
     const ageMonths = ageYears * 12;
+    const ageWeeks = ageYears * 52;
     const percent = clamp(Math.round((ageMonths / totalMonths) * 100), 0, 100);
     const monthsPassed = clamp(Math.floor(ageMonths), 0, totalMonths);
+    const weeksPassed = clamp(Math.floor(ageWeeks), 0, totalWeeks);
     return {
       percent,
       monthsPassed,
-      totalMonths
+      totalMonths,
+      weeksPassed,
+      totalWeeks
     };
   }, [dob, expectancy]);
 
   const formCard = (
-    <div className="rounded-2xl bg-white p-5 shadow-soft dark:bg-neutral-900">
-      <div className="mb-4 flex items-center justify-between">
+    <form
+      onSubmit={handleSubmit}
+      className="rounded-2xl bg-white p-4 shadow-soft dark:bg-neutral-900"
+    >
+      <div className="mb-3 flex items-center justify-between">
         <div>
           <Dialog.Title className="text-lg font-semibold text-neutral-900 dark:text-white">
             Profile details
@@ -427,45 +471,61 @@ export default function Home() {
             Update your basics one step at a time.
           </Dialog.Description>
         </div>
-        <Dialog.Close className="rounded-full border border-neutral-200 px-3 py-1 text-xs font-semibold text-neutral-600 transition hover:border-neutral-300 hover:text-neutral-900 dark:border-neutral-700 dark:text-neutral-300 dark:hover:border-neutral-500 dark:hover:text-white">
+        <Dialog.Close className="rounded-full border border-neutral-200 px-2 py-1 text-xs font-semibold text-neutral-600 transition hover:border-neutral-300 hover:text-neutral-900 dark:border-neutral-700 dark:text-neutral-300 dark:hover:border-neutral-500 dark:hover:text-white">
           Close
         </Dialog.Close>
       </div>
       <div className="grid gap-4">
         <div>
           <label className="text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
-            Date of birth
-          </label>
-        </div>
-        <div>
-          {mounted ? (
-            <DatePicker
-              value={dob}
-              onChange={({date}) => setDob(date as Date)}
-              placeholder="Date of birth"
-              minDate={new Date(1901, 0, 1)}
-              maxDate={new Date()}
-            />
-          ) : (
-            <Input value={dob ? dob.toISOString().split("T")[0] : ""} disabled />
-          )}
-        </div>
-        <div>
-          <label className="text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
-            Life expectancy ({expectancy} years)
+            Life expectancy ({draftLifeExpectancy} years)
           </label>
           <input
             type="range"
             min={1}
             max={120}
             step={1}
-            value={expectancy}
+            value={draftLifeExpectancy}
             onChange={(event) => {
-              setHasCustomExpectancy(true);
-              setLifeExpectancy(Number(event.target.value));
+              setDraftHasCustomExpectancy(true);
+              setDraftLifeExpectancy(Number(event.target.value));
             }}
             className="mt-2 w-full accent-neutral-900 dark:accent-white"
           />
+        </div>
+        <div>
+          <label className="text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
+            Date of birth
+          </label>
+          <div className="mt-2">
+            {mounted ? (
+              <DatePicker
+                value={draftDob}
+                onChange={({date}) => {
+                  const nextDate = Array.isArray(date) ? date[0] : (date as Date | null);
+                  setDraftDob(nextDate ?? null);
+                }}
+                placeholder="Date of birth"
+                minDate={new Date(1901, 0, 1)}
+                maxDate={new Date()}
+                overrides={{
+                  Popover: {
+                    props: {
+                      overrides: {
+                        Body: {
+                          style: {
+                            zIndex: 60
+                          }
+                        }
+                      }
+                    }
+                  }
+                }}
+              />
+            ) : (
+              <Input value={draftDob ? draftDob.toISOString().split("T")[0] : ""} disabled />
+            )}
+          </div>
         </div>
         <div>
           <Select
@@ -473,35 +533,52 @@ export default function Home() {
               {id: "classic", label: "Classic black"},
               {id: "rainbow", label: "Rainbow box"}
             ]}
-            value={dotStyle ? [{id: dotStyle, label: dotStyle === "classic" ? "Classic black" : "Rainbow box"}] : []}
+            value={
+              draftDotStyle
+                ? [
+                    {
+                      id: draftDotStyle,
+                      label: draftDotStyle === "classic" ? "Classic black" : "Rainbow box"
+                    }
+                  ]
+                : []
+            }
             placeholder="Dot style"
             clearable={false}
-            onChange={(params) => setDotStyle((params.value[0]?.id as "classic" | "rainbow") ?? "classic")}
+            onChange={(params) =>
+              setDraftDotStyle((params.value[0]?.id as "classic" | "rainbow") ?? "classic")
+            }
           />
         </div>
-        <div>
+        <div className="grid gap-3 sm:grid-cols-2">
           <Input
-            value={name}
-            onChange={(event) => setName((event.target as HTMLInputElement).value)}
+            value={draftName}
+            onChange={(event) => setDraftName((event.target as HTMLInputElement).value)}
             placeholder="Name"
             clearable
           />
-        </div>
-        <div>
           <Select
             options={countryOptions}
-            value={countryOptions.filter((option) => option.id === country)}
+            value={countryOptions.filter((option) => option.id === draftCountry)}
             placeholder="Country"
             searchable
             clearable
             onChange={(params) => {
-              setHasCustomExpectancy(false);
-              setCountry((params.value[0]?.id as string) ?? "");
+              setDraftHasCustomExpectancy(false);
+              setDraftCountry((params.value[0]?.id as string) ?? "");
             }}
           />
         </div>
       </div>
-    </div>
+      <div className="mt-5 flex justify-end">
+        <button
+          type="submit"
+          className="inline-flex items-center justify-center rounded-full bg-neutral-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-neutral-800 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100"
+        >
+          Save changes
+        </button>
+      </div>
+    </form>
   );
 
   return (
@@ -509,7 +586,7 @@ export default function Home() {
       <Dialog.Root open={isModalOpen} onOpenChange={setIsModalOpen}>
         <section className="mx-auto flex w-full max-w-[820px] flex-col gap-6">
           <div className="flex items-center justify-between">
-            <h1 class="text-sm">Life Dots</h1>
+            <h1 className="text-sm">Life Dots</h1>
             <Dialog.Trigger
               className="inline-flex items-center justify-center rounded-full border border-neutral-200 p-2 text-neutral-600 transition hover:border-neutral-300 hover:text-neutral-900 dark:border-neutral-700 dark:text-neutral-300 dark:hover:border-neutral-500 dark:hover:text-white"
               aria-label="Open profile settings"
@@ -532,8 +609,14 @@ export default function Home() {
           </div>
 
           <div className="rounded-md bg-white p-4 dark:bg-neutral-900">
-            <div className="flex justify-end text-sm font-medium text-neutral-500 dark:text-neutral-400">
-              {progress.monthsPassed}/{progress.totalMonths} • {progress.percent}%
+            <div className="flex flex-wrap justify-end gap-x-3 text-sm font-medium text-neutral-500 dark:text-neutral-400">
+              <span>
+                Months: {progress.monthsPassed}/{progress.totalMonths}
+              </span>
+              <span>
+                Weeks: {progress.weeksPassed}/{progress.totalWeeks}
+              </span>
+              <span>{progress.percent}%</span>
             </div>
             <div className="mt-6">
               <DotsGrid
@@ -541,6 +624,9 @@ export default function Home() {
                 filled={progress.monthsPassed}
                 dotStyle={dotStyle}
               />
+            </div>
+            <div className="mt-4 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
+              {name ? `Name: ${name}` : "Add your name in settings"}
             </div>
           </div>
         </section>
