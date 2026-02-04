@@ -606,7 +606,7 @@ export default function Home() {
 
   return (
     <main className="min-h-screen py-6">
-      <section className="mx-[60px] flex w-[860px] flex-col gap-4">
+      <section className="mx-auto flex w-[860px] flex-col gap-4">
         <div className="text-center">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-400">
             Life in Weeks
@@ -640,7 +640,7 @@ export default function Home() {
           </button>
         </div>
 
-        <div className="flex min-h-[60vh] max-h-[calc(100vh-220px)] flex-col rounded-md bg-white p-[30px] dark:bg-neutral-900">
+        <div className="flex min-h-[100vh] max-h-[calc(100vh-220px)] flex-col rounded-md bg-white p-[30px] dark:bg-neutral-900">
           <div className="flex flex-wrap justify-end gap-x-3 text-sm font-medium text-neutral-500 dark:text-neutral-400">
             <span>
               Weeks: {progress.weeksPassed}/{progress.totalWeeks}
@@ -664,7 +664,7 @@ export default function Home() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         anchor="right"
-        size="520px"
+        size="420px"
         animate
         autoFocus
         closeable
