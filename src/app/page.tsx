@@ -349,18 +349,22 @@ export default function Home() {
   const progress = useMemo(() => {
     if (!dob) {
       return {
-        yearPercent: 0,
-        yearsPassed: 0
+        percent: 0,
+        monthsPassed: 0,
+        totalMonths: expectancy * 12
       };
     }
     const now = new Date();
     const ageMs = now.getTime() - dob.getTime();
     const ageYears = ageMs / (1000 * 60 * 60 * 24 * 365.25);
-    const yearPercent = clamp(Math.round((ageYears / expectancy) * 100), 0, 100);
-    const yearsPassed = clamp(Math.floor(ageYears), 0, expectancy);
+    const totalMonths = expectancy * 12;
+    const ageMonths = ageYears * 12;
+    const percent = clamp(Math.round((ageMonths / totalMonths) * 100), 0, 100);
+    const monthsPassed = clamp(Math.floor(ageMonths), 0, totalMonths);
     return {
-      yearPercent,
-      yearsPassed
+      percent,
+      monthsPassed,
+      totalMonths
     };
   }, [dob, expectancy]);
 
@@ -427,12 +431,12 @@ export default function Home() {
       <section className="mx-auto flex w-full max-w-[820px] flex-col gap-8">
         {!isModalOpen ? formCard : null}
 
-        <div className="rounded-[32px] bg-white p-8 shadow-soft dark:bg-neutral-900">
+        <div className="rounded-md bg-white p-4 dark:bg-neutral-900">
           <div className="flex justify-end text-sm font-medium text-neutral-500 dark:text-neutral-400">
-            {progress.yearsPassed}/{expectancy} • {progress.yearPercent}%
+            {progress.monthsPassed}/{progress.totalMonths} • {progress.percent}%
           </div>
           <div className="mt-6">
-            <DotsGrid total={expectancy} filled={progress.yearsPassed} />
+            <DotsGrid total={progress.totalMonths} filled={progress.monthsPassed} />
           </div>
         </div>
       </section>
