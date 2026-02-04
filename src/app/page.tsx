@@ -4,6 +4,7 @@ import {useEffect, useMemo, useState} from "react";
 import {Input} from "baseui/input";
 import {Select} from "baseui/select";
 import {DatePicker} from "baseui/datepicker";
+import {Dialog} from "@base-ui/react/dialog";
 
 const countryCodes = [
   "AF",
@@ -369,18 +370,21 @@ export default function Home() {
   }, [dob, expectancy]);
 
   const formCard = (
-    <div className="rounded-[28px] bg-white p-6 shadow-soft dark:bg-neutral-900">
+    <div className="rounded-2xl bg-white p-5 shadow-soft dark:bg-neutral-900">
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-neutral-900 dark:text-white">Profile details</h2>
-        <button
-          type="button"
-          onClick={() => setIsModalOpen(false)}
-          className="rounded-full border border-neutral-200 px-3 py-1 text-xs font-semibold text-neutral-600 transition hover:border-neutral-300 hover:text-neutral-900 dark:border-neutral-700 dark:text-neutral-300 dark:hover:border-neutral-500 dark:hover:text-white"
-        >
+        <div>
+          <Dialog.Title className="text-lg font-semibold text-neutral-900 dark:text-white">
+            Profile details
+          </Dialog.Title>
+          <Dialog.Description className="text-sm text-neutral-500 dark:text-neutral-400">
+            Update your basics one step at a time.
+          </Dialog.Description>
+        </div>
+        <Dialog.Close className="rounded-full border border-neutral-200 px-3 py-1 text-xs font-semibold text-neutral-600 transition hover:border-neutral-300 hover:text-neutral-900 dark:border-neutral-700 dark:text-neutral-300 dark:hover:border-neutral-500 dark:hover:text-white">
           Close
-        </button>
+        </Dialog.Close>
       </div>
-      <div className="grid gap-6 md:grid-cols-3">
+      <div className="grid gap-4">
         <div>
           <Input
             value={name}
@@ -418,28 +422,47 @@ export default function Home() {
 
   return (
     <main className="px-6 py-12">
-      {isModalOpen ? (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-950/60 px-6 py-10"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Profile details"
-        >
-          <div className="w-full max-w-[820px]">{formCard}</div>
-        </div>
-      ) : null}
-      <section className="mx-auto flex w-full max-w-[820px] flex-col gap-8">
-        {!isModalOpen ? formCard : null}
+      <Dialog.Root open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <section className="mx-auto flex w-full max-w-[820px] flex-col gap-6">
+          <div className="flex justify-end">
+            <Dialog.Trigger
+              className="inline-flex items-center justify-center rounded-full border border-neutral-200 p-2 text-neutral-600 transition hover:border-neutral-300 hover:text-neutral-900 dark:border-neutral-700 dark:text-neutral-300 dark:hover:border-neutral-500 dark:hover:text-white"
+              aria-label="Open profile settings"
+            >
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 24 24"
+                className="h-4 w-4"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M10.5 6h3m-7.5 4h11m-7.5 4h3m-8 4h10M4 4h16v16H4z"
+                />
+              </svg>
+            </Dialog.Trigger>
+          </div>
 
-        <div className="rounded-md bg-white p-4 dark:bg-neutral-900">
-          <div className="flex justify-end text-sm font-medium text-neutral-500 dark:text-neutral-400">
-            {progress.monthsPassed}/{progress.totalMonths} • {progress.percent}%
+          <div className="rounded-md bg-white p-4 dark:bg-neutral-900">
+            <div className="flex justify-end text-sm font-medium text-neutral-500 dark:text-neutral-400">
+              {progress.monthsPassed}/{progress.totalMonths} • {progress.percent}%
+            </div>
+            <div className="mt-6">
+              <DotsGrid total={progress.totalMonths} filled={progress.monthsPassed} />
+            </div>
           </div>
-          <div className="mt-6">
-            <DotsGrid total={progress.totalMonths} filled={progress.monthsPassed} />
-          </div>
-        </div>
-      </section>
+        </section>
+
+        <Dialog.Portal>
+          <Dialog.Backdrop className="fixed inset-0 bg-neutral-950/60" />
+          <Dialog.Viewport className="fixed inset-0 z-50 flex items-center justify-center px-6 py-10">
+            <Dialog.Popup className="w-full max-w-[520px]">{formCard}</Dialog.Popup>
+          </Dialog.Viewport>
+        </Dialog.Portal>
+      </Dialog.Root>
     </main>
   );
 }
