@@ -1,6 +1,6 @@
 "use client";
 
-import {useEffect, useMemo, useState} from "react";
+import {useEffect, useMemo, useRef, useState} from "react";
 import {Input} from "baseui/input";
 import {Select} from "baseui/select";
 import {DatePicker} from "baseui/datepicker";
@@ -285,6 +285,7 @@ type Profile = {
   country: string;
   dob: string;
   lifeExpectancy?: number;
+  hasCustomExpectancy?: boolean;
   dotStyle?: "classic" | "rainbow";
 };
 
@@ -317,22 +318,30 @@ function DotsGrid({
   total,
   filled,
   dotStyle,
-  perRow
+  perRow,
+  dotSize,
+  gap
 }: {
   total: number;
   filled: number;
   dotStyle: "classic" | "rainbow";
   perRow: number;
+  dotSize: number;
+  gap: number;
 }) {
   return (
     <div
-      className="grid gap-3"
-      style={{gridTemplateColumns: `repeat(${perRow}, 0.75rem)`}}
+      className="grid"
+      style={{
+        gridTemplateColumns: `repeat(${perRow}, ${dotSize}px)`,
+        gap: `${gap}px`
+      }}
     >
       {Array.from({length: total}).map((_, index) => (
         <span
           key={index}
-          className={`h-3 w-3 ${
+          style={{height: dotSize, width: dotSize}}
+          className={`${
             dotStyle === "classic" ? "rounded-full" : "rounded-sm"
           } ${
             index < filled
@@ -362,19 +371,31 @@ export default function Home() {
   const [draftDotStyle, setDraftDotStyle] = useState<"classic" | "rainbow">("classic");
   const [mounted, setMounted] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [gridMetrics, setGridMetrics] = useState({dotSize: 8, gap: 4});
+  const gridRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
     const stored = window.localStorage.getItem(STORAGE_KEY);
     if (!stored) return;
     const profile = JSON.parse(stored) as Profile;
+    const storedCountry = profile.country || "";
+    const storedExpectancy =
+      typeof profile.lifeExpectancy === "number" ? profile.lifeExpectancy : undefined;
+    const defaultExpectancy = storedCountry ? (lifeExpectancyByCountry[storedCountry] ?? 80) : 80;
+    const inferredHasCustom =
+      storedExpectancy !== undefined && storedExpectancy !== defaultExpectancy;
+    const nextHasCustom =
+      typeof profile.hasCustomExpectancy === "boolean"
+        ? profile.hasCustomExpectancy
+        : inferredHasCustom;
     setName(profile.name || "");
-    setCountry(profile.country || "");
+    setCountry(storedCountry);
     setDob(profile.dob ? new Date(profile.dob) : null);
-    if (typeof profile.lifeExpectancy === "number") {
-      setLifeExpectancy(profile.lifeExpectancy);
-      setHasCustomExpectancy(true);
+    if (storedExpectancy !== undefined) {
+      setLifeExpectancy(storedExpectancy);
     }
+    setHasCustomExpectancy(nextHasCustom);
     if (profile.dotStyle) {
       setDotStyle(profile.dotStyle);
     }
@@ -391,10 +412,11 @@ export default function Home() {
       country,
       dob: dob ? dob.toISOString() : "",
       lifeExpectancy,
+      hasCustomExpectancy,
       dotStyle
     };
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
-  }, [name, country, dob, lifeExpectancy, dotStyle]);
+  }, [name, country, dob, lifeExpectancy, dotStyle, hasCustomExpectancy]);
 
   const countryOption = countryOptions.find((option) => option.id === country);
   useEffect(() => {
@@ -432,6 +454,32 @@ export default function Home() {
   };
 
   const expectancy = clamp(lifeExpectancy, 1, 120);
+
+  useEffect(() => {
+    if (!mounted) return;
+    const element = gridRef.current;
+    if (!element) return;
+
+    const updateMetrics = () => {
+      const {width, height} = element.getBoundingClientRect();
+      if (!width || !height) return;
+      const rows = expectancy;
+      const columns = 52;
+      const cellSize = Math.floor(Math.min(width / columns, height / rows));
+      const gap = Math.max(1, Math.floor(cellSize * 0.25));
+      const dotSize = Math.max(2, Math.floor(cellSize - gap));
+      setGridMetrics({dotSize, gap});
+    };
+
+    updateMetrics();
+    const observer = new ResizeObserver(updateMetrics);
+    observer.observe(element);
+    window.addEventListener("resize", updateMetrics);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", updateMetrics);
+    };
+  }, [expectancy, mounted]);
 
   const progress = useMemo(() => {
     if (!dob) {
@@ -584,8 +632,8 @@ export default function Home() {
   );
 
   return (
-    <main className="px-6 py-12">
-      <section className="mx-auto flex w-full max-w-[820px] flex-col gap-6">
+    <main className="min-h-screen px-6 py-6">
+      <section className="mx-auto flex w-full max-w-[820px] flex-col gap-4">
         <div className="text-center">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-400">
             Life in Weeks
@@ -619,19 +667,21 @@ export default function Home() {
           </button>
         </div>
 
-        <div className="rounded-md bg-white p-4 dark:bg-neutral-900">
+        <div className="flex min-h-[60vh] max-h-[calc(100vh-220px)] flex-col rounded-md bg-white p-4 dark:bg-neutral-900">
           <div className="flex flex-wrap justify-end gap-x-3 text-sm font-medium text-neutral-500 dark:text-neutral-400">
             <span>
               Weeks: {progress.weeksPassed}/{progress.totalWeeks}
             </span>
             <span>{progress.percent}%</span>
           </div>
-          <div className="mt-6 overflow-x-auto">
+          <div ref={gridRef} className="mt-4 flex-1">
             <DotsGrid
               total={progress.totalWeeks}
               filled={progress.weeksPassed}
               dotStyle={dotStyle}
               perRow={52}
+              dotSize={gridMetrics.dotSize}
+              gap={gridMetrics.gap}
             />
           </div>
         </div>
