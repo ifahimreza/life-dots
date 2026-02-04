@@ -284,6 +284,8 @@ type Profile = {
   name: string;
   country: string;
   dob: string;
+  lifeExpectancy?: number;
+  dotStyle?: "classic" | "rainbow";
 };
 
 const STORAGE_KEY = "life-progress-profile";
@@ -292,20 +294,47 @@ function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
 }
 
+const rainbowColors = [
+  "bg-red-400",
+  "bg-orange-400",
+  "bg-amber-400",
+  "bg-yellow-400",
+  "bg-lime-400",
+  "bg-green-400",
+  "bg-emerald-400",
+  "bg-teal-400",
+  "bg-cyan-400",
+  "bg-sky-400",
+  "bg-blue-400",
+  "bg-indigo-400",
+  "bg-violet-400",
+  "bg-fuchsia-400",
+  "bg-pink-400",
+  "bg-rose-400"
+];
+
 function DotsGrid({
   total,
-  filled
+  filled,
+  dotStyle
 }: {
   total: number;
   filled: number;
+  dotStyle: "classic" | "rainbow";
 }) {
   return (
     <div className="flex flex-wrap gap-3">
       {Array.from({length: total}).map((_, index) => (
         <span
           key={index}
-          className={`h-3 w-3 rounded-full ${
-            index < filled ? "bg-neutral-900 dark:bg-white" : "bg-neutral-200 dark:bg-neutral-800"
+          className={`h-3 w-3 ${
+            dotStyle === "classic" ? "rounded-full" : "rounded-sm"
+          } ${
+            index < filled
+              ? dotStyle === "classic"
+                ? "bg-neutral-900 dark:bg-white"
+                : rainbowColors[index % rainbowColors.length]
+              : "bg-neutral-200 dark:bg-neutral-800"
           }`}
         />
       ))}
@@ -317,8 +346,11 @@ export default function Home() {
   const [name, setName] = useState("");
   const [country, setCountry] = useState<string>("");
   const [dob, setDob] = useState<Date | null>(null);
+  const [lifeExpectancy, setLifeExpectancy] = useState(80);
+  const [hasCustomExpectancy, setHasCustomExpectancy] = useState(false);
+  const [dotStyle, setDotStyle] = useState<"classic" | "rainbow">("classic");
   const [mounted, setMounted] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -328,6 +360,13 @@ export default function Home() {
     setName(profile.name || "");
     setCountry(profile.country || "");
     setDob(profile.dob ? new Date(profile.dob) : null);
+    if (typeof profile.lifeExpectancy === "number") {
+      setLifeExpectancy(profile.lifeExpectancy);
+      setHasCustomExpectancy(true);
+    }
+    if (profile.dotStyle) {
+      setDotStyle(profile.dotStyle);
+    }
   }, []);
 
   useEffect(() => {
@@ -339,13 +378,21 @@ export default function Home() {
     const profile: Profile = {
       name,
       country,
-      dob: dob ? dob.toISOString() : ""
+      dob: dob ? dob.toISOString() : "",
+      lifeExpectancy,
+      dotStyle
     };
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
-  }, [name, country, dob]);
+  }, [name, country, dob, lifeExpectancy, dotStyle]);
 
   const countryOption = countryOptions.find((option) => option.id === country);
-  const expectancy = countryOption?.expectancy ?? 80;
+  useEffect(() => {
+    if (!hasCustomExpectancy) {
+      setLifeExpectancy(countryOption?.expectancy ?? 80);
+    }
+  }, [countryOption?.expectancy, hasCustomExpectancy]);
+
+  const expectancy = clamp(lifeExpectancy, 1, 120);
 
   const progress = useMemo(() => {
     if (!dob) {
@@ -386,6 +433,53 @@ export default function Home() {
       </div>
       <div className="grid gap-4">
         <div>
+          <label className="text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
+            Date of birth
+          </label>
+        </div>
+        <div>
+          {mounted ? (
+            <DatePicker
+              value={dob}
+              onChange={({date}) => setDob(date as Date)}
+              placeholder="Date of birth"
+              minDate={new Date(1901, 0, 1)}
+              maxDate={new Date()}
+            />
+          ) : (
+            <Input value={dob ? dob.toISOString().split("T")[0] : ""} disabled />
+          )}
+        </div>
+        <div>
+          <label className="text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
+            Life expectancy ({expectancy} years)
+          </label>
+          <input
+            type="range"
+            min={1}
+            max={120}
+            step={1}
+            value={expectancy}
+            onChange={(event) => {
+              setHasCustomExpectancy(true);
+              setLifeExpectancy(Number(event.target.value));
+            }}
+            className="mt-2 w-full accent-neutral-900 dark:accent-white"
+          />
+        </div>
+        <div>
+          <Select
+            options={[
+              {id: "classic", label: "Classic black"},
+              {id: "rainbow", label: "Rainbow box"}
+            ]}
+            value={dotStyle ? [{id: dotStyle, label: dotStyle === "classic" ? "Classic black" : "Rainbow box"}] : []}
+            placeholder="Dot style"
+            clearable={false}
+            onChange={(params) => setDotStyle((params.value[0]?.id as "classic" | "rainbow") ?? "classic")}
+          />
+        </div>
+        <div>
           <Input
             value={name}
             onChange={(event) => setName((event.target as HTMLInputElement).value)}
@@ -400,21 +494,11 @@ export default function Home() {
             placeholder="Country"
             searchable
             clearable
-            onChange={(params) => setCountry((params.value[0]?.id as string) ?? "")}
+            onChange={(params) => {
+              setHasCustomExpectancy(false);
+              setCountry((params.value[0]?.id as string) ?? "");
+            }}
           />
-        </div>
-        <div>
-          {mounted ? (
-            <DatePicker
-              value={dob}
-              onChange={({date}) => setDob(date as Date)}
-              placeholder="Date of birth"
-              minDate={new Date(1901, 0, 1)}
-              maxDate={new Date()}
-            />
-          ) : (
-            <Input value={dob ? dob.toISOString().split("T")[0] : ""} disabled />
-          )}
         </div>
       </div>
     </div>
@@ -451,7 +535,11 @@ export default function Home() {
               {progress.monthsPassed}/{progress.totalMonths} • {progress.percent}%
             </div>
             <div className="mt-6">
-              <DotsGrid total={progress.totalMonths} filled={progress.monthsPassed} />
+              <DotsGrid
+                total={progress.totalMonths}
+                filled={progress.monthsPassed}
+                dotStyle={dotStyle}
+              />
             </div>
           </div>
         </section>
