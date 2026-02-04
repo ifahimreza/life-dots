@@ -300,7 +300,7 @@ function DotsGrid({
   filled: number;
 }) {
   return (
-    <div className="grid grid-cols-10 gap-2 sm:grid-cols-12">
+    <div className="flex flex-wrap gap-3">
       {Array.from({length: total}).map((_, index) => (
         <span
           key={index}
