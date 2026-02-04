@@ -1,6 +1,6 @@
 "use client";
 
-import {useEffect, useMemo, useRef, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import {Input} from "baseui/input";
 import {Select} from "baseui/select";
 import {DatePicker} from "baseui/datepicker";
@@ -371,8 +371,7 @@ export default function Home() {
   const [draftDotStyle, setDraftDotStyle] = useState<"classic" | "rainbow">("classic");
   const [mounted, setMounted] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [gridMetrics, setGridMetrics] = useState({dotSize: 8, gap: 4});
-  const gridRef = useRef<HTMLDivElement | null>(null);
+  const [gridMetrics] = useState({dotSize: 10.38, gap: 5});
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -454,32 +453,6 @@ export default function Home() {
   };
 
   const expectancy = clamp(lifeExpectancy, 1, 120);
-
-  useEffect(() => {
-    if (!mounted) return;
-    const element = gridRef.current;
-    if (!element) return;
-
-    const updateMetrics = () => {
-      const {width, height} = element.getBoundingClientRect();
-      if (!width || !height) return;
-      const rows = expectancy;
-      const columns = 52;
-      const cellSize = Math.floor(Math.min(width / columns, height / rows));
-      const gap = Math.max(1, Math.floor(cellSize * 0.25));
-      const dotSize = Math.max(2, Math.floor(cellSize - gap));
-      setGridMetrics({dotSize, gap});
-    };
-
-    updateMetrics();
-    const observer = new ResizeObserver(updateMetrics);
-    observer.observe(element);
-    window.addEventListener("resize", updateMetrics);
-    return () => {
-      observer.disconnect();
-      window.removeEventListener("resize", updateMetrics);
-    };
-  }, [expectancy, mounted]);
 
   const progress = useMemo(() => {
     if (!dob) {
@@ -632,8 +605,8 @@ export default function Home() {
   );
 
   return (
-    <main className="min-h-screen px-6 py-6">
-      <section className="mx-auto flex w-full max-w-[820px] flex-col gap-4">
+    <main className="min-h-screen py-6">
+      <section className="mx-[60px] flex w-[860px] flex-col gap-4">
         <div className="text-center">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-400">
             Life in Weeks
@@ -667,14 +640,14 @@ export default function Home() {
           </button>
         </div>
 
-        <div className="flex min-h-[60vh] max-h-[calc(100vh-220px)] flex-col rounded-md bg-white p-4 dark:bg-neutral-900">
+        <div className="flex min-h-[60vh] max-h-[calc(100vh-220px)] flex-col rounded-md bg-white p-[30px] dark:bg-neutral-900">
           <div className="flex flex-wrap justify-end gap-x-3 text-sm font-medium text-neutral-500 dark:text-neutral-400">
             <span>
               Weeks: {progress.weeksPassed}/{progress.totalWeeks}
             </span>
             <span>{progress.percent}%</span>
           </div>
-          <div ref={gridRef} className="mt-4 flex-1">
+          <div className="mt-4 flex-1">
             <DotsGrid
               total={progress.totalWeeks}
               filled={progress.weeksPassed}
