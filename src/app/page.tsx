@@ -7,6 +7,7 @@ import ProfileDrawer from "../components/ProfileDrawer";
 import {
   CountryOption,
   DotStyle,
+  LanguageId,
   Profile,
   STORAGE_KEY,
   countryCodes,
@@ -24,14 +25,14 @@ export default function Home() {
   const [lifeExpectancy, setLifeExpectancy] = useState(80);
   const [hasCustomExpectancy, setHasCustomExpectancy] = useState(false);
   const [dotStyle, setDotStyle] = useState<DotStyle>("classic");
-  const [language, setLanguage] = useState("default");
+  const [language, setLanguage] = useState<LanguageId>("default");
   const [draftName, setDraftName] = useState("");
   const [draftCountry, setDraftCountry] = useState<string>("");
   const [draftDob, setDraftDob] = useState<Date | null>(null);
   const [draftLifeExpectancy, setDraftLifeExpectancy] = useState(80);
   const [draftHasCustomExpectancy, setDraftHasCustomExpectancy] = useState(false);
   const [draftDotStyle, setDraftDotStyle] = useState<DotStyle>("classic");
-  const [draftLanguage, setDraftLanguage] = useState("default");
+  const [draftLanguage, setDraftLanguage] = useState<LanguageId>("default");
   const [mounted, setMounted] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [gridMetrics] = useState({dotSize: 10.38, gap: 5});
@@ -63,7 +64,7 @@ export default function Home() {
     if (!stored) return;
     const profile = JSON.parse(stored) as Profile;
     const storedCountry = profile.country || "";
-    const storedLanguage = profile.language || "default";
+    const storedLanguage = (profile.language ?? "default") as LanguageId;
     const storedExpectancy =
       typeof profile.lifeExpectancy === "number" ? profile.lifeExpectancy : undefined;
     const defaultExpectancy = storedCountry ? (lifeExpectancyByCountry[storedCountry] ?? 80) : 80;
@@ -202,9 +203,6 @@ export default function Home() {
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-400">
             Life in Weeks
           </p>
-          <div className="mt-3 text-sm font-semibold uppercase tracking-widest text-neutral-700 dark:text-neutral-200">
-            {name || "Add your name in settings"}
-          </div>
         </div>
         <div className="flex items-center justify-between">
           <h1 className="text-sm">Life Dots</h1>
@@ -253,8 +251,35 @@ export default function Home() {
               gap={gridMetrics.gap}
             />
           </div>
+          {name ? (
+            <div className="pt-4 text-center text-xs font-semibold uppercase tracking-[0.2em] text-neutral-400">
+              {name}
+            </div>
+          ) : null}
         </div>
       </section>
+      <footer className="mx-auto w-full max-w-[860px] px-6 pb-6 pt-4">
+        <div className="flex items-center justify-between text-xs text-neutral-400">
+          <span>Credits: Built by Fahim Reza</span>
+          <a
+            href="https://x.com/ifahimreza"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1 text-neutral-400 transition hover:text-neutral-600 dark:hover:text-neutral-200"
+            aria-label="Fahim Reza on X"
+          >
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 24 24"
+              className="h-3.5 w-3.5"
+              fill="currentColor"
+            >
+              <path d="M17.53 2.25h3.88l-8.48 9.7 9.97 9.8h-4.7l-7.37-7.2-6.3 7.2H.6l9.05-10.35L.08 2.25h4.82l6.66 6.62 6-6.62Zm-1.36 16.9h2.15L6.92 4.7H4.6l11.57 14.45Z" />
+            </svg>
+            <span>@ifahimreza</span>
+          </a>
+        </div>
+      </footer>
 
       <ProfileDrawer
         isOpen={isModalOpen}

@@ -6,6 +6,7 @@ import type {FormEvent} from "react";
 import {
   CountryOption,
   DotStyle,
+  LanguageId,
   dotStyleOptions,
   languageOptions
 } from "../lib/lifeDotsData";
@@ -25,8 +26,8 @@ type ProfileDrawerProps = {
   onDraftLifeExpectancyChange: (value: number) => void;
   draftDotStyle: DotStyle;
   onDraftDotStyleChange: (value: DotStyle) => void;
-  draftLanguage: string;
-  onDraftLanguageChange: (value: string) => void;
+  draftLanguage: LanguageId;
+  onDraftLanguageChange: (value: LanguageId) => void;
   countryOptions: CountryOption[];
 };
 
@@ -179,10 +180,10 @@ export default function ProfileDrawer({
                 placeholder="Language"
                 clearable={false}
                 onChange={(params) =>
-                  onDraftLanguageChange((params.value[0]?.id as string) ?? "default")
-                }
-              />
-            </div>
+                onDraftLanguageChange((params.value[0]?.id as LanguageId) ?? "default")
+              }
+            />
+          </div>
           </div>
           <div className="flex justify-end">
             <button
