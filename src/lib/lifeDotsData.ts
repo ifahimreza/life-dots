@@ -1,13 +1,20 @@
 export type DotStyle = "classic" | "rainbow";
+export type ViewMode = "weeks" | "months" | "years";
 
 export type LanguageId = "default" | "en" | "es" | "fr" | "ja" | "hi" | "bn";
+
+import type {ReactNode} from "react";
 
 export type SelectOption = {
   id: string;
   label: string;
 };
 
-export type CountryOption = SelectOption & {
+export type CountryOption = {
+  id: string;
+  label: ReactNode;
+  name: string;
+  countryCode: string;
   expectancy: number;
 };
 
@@ -19,24 +26,23 @@ export type Profile = {
   hasCustomExpectancy?: boolean;
   dotStyle?: DotStyle;
   language?: LanguageId;
+  viewMode?: ViewMode;
 };
 
-export const STORAGE_KEY = "life-progress-profile";
+export const STORAGE_KEY = "life-dots";
+export const LEGACY_STORAGE_KEYS = ["life-progress-profile", "life-progress"];
 
-export const languageOptions: SelectOption[] = [
-  {id: "default", label: "Default (auto)"},
-  {id: "en", label: "English"},
-  {id: "es", label: "Spanish"},
-  {id: "fr", label: "French"},
-  {id: "ja", label: "Japanese"},
-  {id: "hi", label: "Hindi"},
-  {id: "bn", label: "Bangla"}
+export const SUPPORTED_LANGUAGES: LanguageId[] = [
+  "default",
+  "en",
+  "es",
+  "fr",
+  "ja",
+  "hi",
+  "bn"
 ];
 
-export const dotStyleOptions: SelectOption[] = [
-  {id: "classic", label: "Classic black"},
-  {id: "rainbow", label: "Rainbow box"}
-];
+export const DOT_STYLE_IDS: DotStyle[] = ["classic", "rainbow"];
 
 export const countryCodes = [
   "AF",
@@ -316,3 +322,6 @@ export const rainbowColors = [
   "bg-pink-400",
   "bg-rose-400"
 ];
+
+export const GRID_AXIS_OFFSET = 18;
+export const GRID_GAP_RATIO = 0.48;
