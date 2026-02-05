@@ -28,8 +28,12 @@
   },
   "include": [
     "next-env.d.ts",
-    "src/**/*.ts",
-    "src/**/*.tsx",
+    "app/**/*.ts",
+    "app/**/*.tsx",
+    "components/**/*.ts",
+    "components/**/*.tsx",
+    "libs/**/*.ts",
+    "libs/**/*.tsx",
     ".next/types/**/*.ts"
   ],
   "exclude": [

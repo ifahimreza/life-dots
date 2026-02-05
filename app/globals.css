@@ -1,0 +1,154 @@
+@import url("https://api.fontshare.com/v2/css?f[]=satoshi@1,2,300,400,500,600,700,800&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  color-scheme: light;
+}
+
+body {
+  min-height: 100vh;
+  background: var(--app-bg);
+  color: var(--text-main);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --brand: #3a8f7a;
+  --brand-soft: rgba(58, 143, 122, 0.22);
+  --coral-bright: #f08a7a;
+  --cyan-bright: #2fb8c8;
+  --amber-bright: #f2b263;
+  --app-bg: #f5f5f5;
+  --surface: #ffffff;
+  --surface-border: #e5e7eb;
+  --text-main: #111827;
+  --text-muted: #6b7280;
+  --text-subtle: #9ca3af;
+  --dot-filled: #111827;
+  --dot-empty: #e5e7eb;
+  --axis-text: #9ca3af;
+}
+
+.title-main {
+  color: var(--text-main);
+}
+
+.logo-dot {
+  fill: #111827;
+  animation: logoRainbow 7s linear infinite;
+}
+
+.logo-dot.dot-1 {
+  animation-delay: 0s;
+}
+.logo-dot.dot-2 {
+  animation-delay: 0.3s;
+}
+.logo-dot.dot-3 {
+  animation-delay: 0.6s;
+}
+.logo-dot.dot-4 {
+  animation-delay: 0.9s;
+}
+.logo-dot.dot-5 {
+  animation-delay: 1.2s;
+}
+.logo-dot.dot-6 {
+  animation-delay: 1.5s;
+}
+.logo-dot.dot-7 {
+  animation-delay: 1.8s;
+}
+.logo-dot.dot-8 {
+  animation-delay: 2.1s;
+}
+.logo-dot.dot-9 {
+  animation-delay: 2.4s;
+}
+
+@keyframes logoRainbow {
+  0% {
+    fill: #111827;
+  }
+  15% {
+    fill: #f97316;
+  }
+  30% {
+    fill: #facc15;
+  }
+  45% {
+    fill: #22c55e;
+  }
+  60% {
+    fill: #06b6d4;
+  }
+  75% {
+    fill: #3b82f6;
+  }
+  90% {
+    fill: #a855f7;
+  }
+  100% {
+    fill: #111827;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logo-dot {
+    animation: none;
+  }
+}
+
+.btn-glow {
+  background: linear-gradient(
+    135deg,
+    rgba(58, 143, 122, 0) 0%,
+    var(--brand-soft) 50%,
+    rgba(58, 143, 122, 0) 100%
+  );
+}
+
+.btn-glow-amber {
+  background: linear-gradient(
+    135deg,
+    rgba(242, 178, 99, 0) 0%,
+    rgba(242, 178, 99, 0.18) 50%,
+    rgba(242, 178, 99, 0) 100%
+  );
+}
+
+.focus-brand:focus-visible {
+  box-shadow: 0 0 0 2px rgba(58, 143, 122, 0.45);
+}
+
+.app-body {
+  background: var(--app-bg);
+  color: var(--text-main);
+}
+
+.surface-card {
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
+}
+
+.text-muted {
+  color: var(--text-muted);
+}
+
+.text-subtle {
+  color: var(--text-subtle);
+}
+
+.text-main {
+  color: var(--text-main);
+}
+
+.border-surface {
+  border-color: var(--surface-border);
+}

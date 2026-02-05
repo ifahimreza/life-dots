@@ -1,0 +1,17 @@
+{
+  "name": "Life in Dots",
+  "short_name": "Life in Dots",
+  "description": "Track the passage of time with a minimalist life dots view",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f5f5f5",
+  "theme_color": "#3a8f7a",
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
