@@ -1,6 +1,6 @@
 import {NextResponse} from "next/server";
 import config from "../../../../config.server";
-import {createCheckoutLink} from "../../../../libs/freemius";
+import {createCheckoutLink, getMissingFreemiusConfigKeys} from "../../../../libs/freemius";
 import {createSupabaseAdminClient} from "../../../../libs/supabaseAdmin";
 
 type CheckoutRequest = {
@@ -11,8 +11,16 @@ type CheckoutRequest = {
 };
 
 export async function POST(request: Request) {
-  if (!config.freemius?.productId) {
-    return NextResponse.json({error: "Missing Freemius configuration"}, {status: 500});
+  const missingFreemiusKeys = getMissingFreemiusConfigKeys();
+  if (missingFreemiusKeys.length > 0) {
+    console.error("Freemius config missing keys:", missingFreemiusKeys.join(", "));
+    return NextResponse.json(
+      {
+        error: "Freemius server configuration is missing.",
+        missing: missingFreemiusKeys
+      },
+      {status: 500}
+    );
   }
 
   const authHeader = request.headers.get("authorization") ?? "";

@@ -11,13 +11,28 @@ type CheckoutInput = {
 
 let freemiusClient: Freemius | null = null;
 
+export function getMissingFreemiusConfigKeys(): string[] {
+  const missing: string[] = [];
+  const freemius = config.freemius;
+
+  if (!freemius?.productId) missing.push("FREEMIUS_PRODUCT_ID");
+  if (!freemius?.apiKey) missing.push("FREEMIUS_API_KEY");
+  if (!freemius?.secretKey) missing.push("FREEMIUS_SECRET_KEY");
+  if (!freemius?.publicKey) missing.push("FREEMIUS_PUBLIC_KEY");
+  if (!freemius?.plans?.yearly?.planId) missing.push("FREEMIUS_PLAN_ID_YEARLY");
+  if (!freemius?.plans?.lifetime?.planId) missing.push("FREEMIUS_PLAN_ID_LIFETIME");
+
+  return missing;
+}
+
 export function getFreemiusClient() {
   if (freemiusClient) return freemiusClient;
 
-  const {productId, apiKey, secretKey, publicKey} = config.freemius ?? {};
-  if (!productId || !apiKey || !secretKey || !publicKey) {
-    throw new Error("Missing Freemius credentials.");
+  const missing = getMissingFreemiusConfigKeys();
+  if (missing.length > 0) {
+    throw new Error(`Missing Freemius credentials: ${missing.join(", ")}`);
   }
+  const {productId, apiKey, secretKey, publicKey} = config.freemius ?? {};
 
   freemiusClient = new Freemius({
     productId,
