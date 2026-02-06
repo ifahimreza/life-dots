@@ -1,6 +1,7 @@
 import AppFooter from "../../components/AppFooter";
 import {getTranslations} from "../../libs/i18n";
 import config from "../../config";
+import Link from "next/link";
 
 export default function PrivacyPage() {
   const strings = getTranslations("default", "en");
@@ -9,6 +10,15 @@ export default function PrivacyPage() {
   return (
     <main className="flex min-h-screen flex-col py-6">
       <section className="mx-auto flex w-full max-w-[860px] flex-1 flex-col gap-6 px-4 sm:px-6">
+        <div>
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 rounded-full border border-surface px-3 py-1.5 text-xs font-semibold text-main transition hover:bg-neutral-50"
+          >
+            <span aria-hidden="true">←</span>
+            <span>Back</span>
+          </Link>
+        </div>
         <div className="rounded-3xl surface-card p-6 shadow-soft">
           <h1 className="text-2xl font-semibold text-main">Privacy Policy</h1>
           <p className="mt-2 text-xs font-semibold uppercase tracking-[0.18em] text-subtle">
