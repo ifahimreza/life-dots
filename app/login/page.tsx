@@ -5,7 +5,6 @@ import type {FormEvent} from "react";
 import {useCallback, useEffect, useState} from "react";
 import {useRouter} from "next/navigation";
 import GoogleButton from "../../components/GoogleButton";
-import LogoMark from "../../components/LogoMark";
 import TurnstileWidget from "../../components/TurnstileWidget";
 import {getRedirectUrl} from "../../libs/appUrl";
 import {getSupabaseClient} from "../../libs/supabaseClient";
@@ -125,8 +124,21 @@ export default function LoginPage() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-white px-4 py-10">
       <section className="w-full max-w-[360px] rounded-2xl border border-neutral-200 bg-white p-6 sm:p-7">
-        <div className="h-8 w-8 overflow-hidden rounded-lg opacity-60">
-          <LogoMark className="h-full w-full" />
+        <div className="inline-flex items-center gap-2">
+          <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-[#00c565]/10 text-[#00c565]">
+            <svg aria-hidden="true" viewBox="0 0 24 24" className="h-4 w-4 fill-current">
+              <circle cx="6" cy="6" r="2.2" />
+              <circle cx="12" cy="6" r="2.2" />
+              <circle cx="18" cy="6" r="2.2" />
+              <circle cx="6" cy="12" r="2.2" />
+              <circle cx="12" cy="12" r="2.2" />
+              <circle cx="18" cy="12" r="2.2" />
+              <circle cx="6" cy="18" r="2.2" />
+              <circle cx="12" cy="18" r="2.2" />
+              <circle cx="18" cy="18" r="2.2" />
+            </svg>
+          </span>
+          <span className="text-sm font-semibold tracking-wide text-main">DotSpan</span>
         </div>
         <h1 className="mt-5 text-[23px] font-semibold leading-tight text-main">
           Welcome back
