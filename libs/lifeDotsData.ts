@@ -1,4 +1,4 @@
-export type DotStyle = "classic" | "rainbow";
+export type DotStyle = "classic" | "rainbow" | "lineBar";
 export type ViewMode = "weeks" | "months" | "years";
 
 export type LanguageId = "default" | "en" | "es" | "fr" | "ja" | "hi" | "bn";
@@ -46,7 +46,7 @@ export const SUPPORTED_LANGUAGES: LanguageId[] = [
   "bn"
 ];
 
-export const DOT_STYLE_IDS: DotStyle[] = ["classic", "rainbow"];
+export const DOT_STYLE_IDS: DotStyle[] = ["classic", "rainbow", "lineBar"];
 
 export {countryCodes, lifeExpectancyByCountry} from "../data/countries";
 

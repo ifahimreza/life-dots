@@ -88,15 +88,24 @@ export default function DotsGrid({
           {Array.from({length: total}).map((_, index) => (
             <span
               key={index}
-              className={dotStyle === "classic" ? "rounded-full" : "rounded-sm"}
+              className={
+                dotStyle === "classic"
+                  ? "rounded-full"
+                  : dotStyle === "lineBar"
+                  ? "block rounded-[3px]"
+                  : "rounded-sm"
+              }
               style={{
                 height: dotSize,
-                width: dotSize,
+                width: dotStyle === "lineBar" ? Math.max(2, dotSize * 0.34) : dotSize,
+                marginInline: dotStyle === "lineBar" ? "auto" : undefined,
                 backgroundColor:
                   index < filled
-                    ? dotStyle === "classic"
+                    ? dotStyle === "classic" || dotStyle === "lineBar"
                       ? filledColor
                       : rainbow[index % rainbow.length]
+                    : dotStyle === "lineBar"
+                    ? theme.palette.axisText
                     : emptyColor
               }}
             />

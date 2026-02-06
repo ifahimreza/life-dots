@@ -13,6 +13,7 @@ import {
 type AppHeaderProps = {
   title: string;
   onOpenSettings: () => void;
+  onOpenUpgrade: () => void;
   isSignedIn: boolean;
   hasAccess: boolean;
   authEmail?: string | null;
@@ -31,7 +32,7 @@ function isItemActive(pathname: string, item: NavItem) {
   if (item.kind === "dashboard") return pathname.startsWith("/dashboard");
   if (item.kind === "billing") return pathname.startsWith("/settings");
   if (item.kind === "login") return pathname.startsWith("/login");
-  if (item.kind === "plus") return pathname.startsWith("/plus");
+  if (item.kind === "plus") return false;
   return false;
 }
 
@@ -79,6 +80,7 @@ function getItemIcon(kind: NavItem["kind"]) {
 export default function AppHeader({
   title,
   onOpenSettings,
+  onOpenUpgrade,
   isSignedIn,
   hasAccess,
   authEmail,
@@ -88,18 +90,24 @@ export default function AppHeader({
   const pathname = usePathname();
   const isClassicTheme = themeId === "classic";
   const avatarLetter = (authEmail?.trim()?.charAt(0) || "U").toUpperCase();
-  const navItems: NavItem[] =
-    isSignedIn && hasAccess
-      ? [
-          {href: "/", label: "Home", kind: "home"},
-          {href: "/dashboard", label: "Dashboard", kind: "dashboard"},
-          {href: "/settings?tab=billing", label: "Billing", kind: "billing"}
-        ]
-      : [
-          {href: "/", label: "Home", kind: "home"},
-          {href: "/login", label: "Login", kind: "login"},
-          {href: "/plus", label: "Plus", kind: "plus"}
-        ];
+  const navItems: NavItem[] = !isSignedIn
+    ? [
+        {href: "/", label: "Home", kind: "home"},
+        {href: "/login", label: "Login", kind: "login"},
+        {href: "#", label: "Plus", kind: "plus"}
+      ]
+    : hasAccess
+    ? [
+        {href: "/", label: "Home", kind: "home"},
+        {href: "/dashboard", label: "Dashboard", kind: "dashboard"},
+        {href: "/settings?tab=billing", label: "Billing", kind: "billing"}
+      ]
+    : [
+        {href: "/", label: "Home", kind: "home"},
+        {href: "/dashboard", label: "Dashboard", kind: "dashboard"},
+        {href: "/settings?tab=billing", label: "Billing", kind: "billing"},
+        {href: "#", label: "Plus", kind: "plus"}
+      ];
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -137,46 +145,67 @@ export default function AppHeader({
             const nextHref = item.href;
             const nextLabel = item.label;
             const showAvatar = item.kind === "dashboard" && isSignedIn && hasAccess;
+            const iconNode = showAvatar ? (
+              <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-neutral-900 text-[10px] font-semibold text-white">
+                {avatarLetter}
+              </span>
+            ) : (
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 24 24"
+                className="h-4 w-4"
+                fill={item.kind === "home" || item.kind === "dashboard" ? "currentColor" : "none"}
+                stroke={item.kind === "home" || item.kind === "dashboard" ? "none" : "currentColor"}
+                strokeWidth="1.7"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                {getItemIcon(item.kind)}
+              </svg>
+            );
+            const itemClassName = `hud-icon-btn ui-tooltip inline-flex h-9 w-9 items-center justify-center rounded-full border text-xs font-semibold transition ${
+              isPlusItem && active
+                ? "is-active border-[#7c3aed]/45 bg-[#7c3aed]/14 text-[#6d28d9]"
+                : active
+                ? "is-active border-neutral-300 bg-neutral-100 text-neutral-900"
+                : isPlusItem && !hasAccess
+                ? "is-pro border-[#7c3aed]/35 bg-[#7c3aed]/8 text-[#7c3aed]"
+                : isPlusItem
+                ? "border-[#7c3aed]/30 bg-[#7c3aed]/6 text-[#7c3aed] hover:border-[#7c3aed]/45 hover:bg-[#7c3aed]/12"
+                : "border-surface bg-white/92 text-muted hover:border-neutral-300 hover:bg-neutral-100 hover:text-main"
+            }`;
+
+            if (item.kind === "plus") {
+              return (
+                <button
+                  key={item.kind}
+                  type="button"
+                  className={itemClassName}
+                  onClick={onOpenUpgrade}
+                  onPointerEnter={playHoverSound}
+                  onPointerDown={playMenuSoundFromGesture}
+                  aria-label={nextLabel}
+                  title={nextLabel}
+                  data-tip={nextLabel}
+                >
+                  {iconNode}
+                  <span className="sr-only">{nextLabel}</span>
+                </button>
+              );
+            }
 
             return (
               <Link
                 key={item.kind}
                 href={nextHref}
-                className={`hud-icon-btn ui-tooltip inline-flex h-9 w-9 items-center justify-center rounded-full border text-xs font-semibold transition ${
-                  isPlusItem && active
-                    ? "is-active border-[#7c3aed]/45 bg-[#7c3aed]/14 text-[#6d28d9]"
-                    : active
-                    ? "is-active border-neutral-300 bg-neutral-100 text-neutral-900"
-                    : isPlusItem && !hasAccess
-                    ? "is-pro border-[#7c3aed]/35 bg-[#7c3aed]/8 text-[#7c3aed]"
-                    : isPlusItem
-                    ? "border-[#7c3aed]/30 bg-[#7c3aed]/6 text-[#7c3aed] hover:border-[#7c3aed]/45 hover:bg-[#7c3aed]/12"
-                    : "border-surface bg-white/92 text-muted hover:border-neutral-300 hover:bg-neutral-100 hover:text-main"
-                }`}
+                className={itemClassName}
                 onPointerEnter={playHoverSound}
                 onPointerDown={playMenuSoundFromGesture}
                 aria-label={nextLabel}
                 title={nextLabel}
                 data-tip={nextLabel}
               >
-                {showAvatar ? (
-                  <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-neutral-900 text-[10px] font-semibold text-white">
-                    {avatarLetter}
-                  </span>
-                ) : (
-                  <svg
-                    aria-hidden="true"
-                    viewBox="0 0 24 24"
-                    className="h-4 w-4"
-                    fill={item.kind === "home" || item.kind === "dashboard" ? "currentColor" : "none"}
-                    stroke={item.kind === "home" || item.kind === "dashboard" ? "none" : "currentColor"}
-                    strokeWidth="1.7"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    {getItemIcon(item.kind)}
-                  </svg>
-                )}
+                {iconNode}
                 <span className="sr-only">{nextLabel}</span>
               </Link>
             );

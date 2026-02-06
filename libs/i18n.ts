@@ -47,6 +47,7 @@ export type UiStrings = {
   inspiredBySuffix: string;
   dotStyleClassic: string;
   dotStyleRainbow: string;
+  dotStyleLineBar: string;
   menuSoundLabel: string;
   menuSoundOff: string;
   menuSoundSoft: string;
@@ -103,6 +104,7 @@ const TRANSLATIONS: Record<Exclude<LanguageId, "default">, UiStrings> = {
     inspiredBySuffix: "",
     dotStyleClassic: "Black Dot",
     dotStyleRainbow: "Rainbow Box",
+    dotStyleLineBar: "Line Bar",
     menuSoundLabel: "Menu sound",
     menuSoundOff: "Off",
     menuSoundSoft: "Soft",
@@ -157,6 +159,7 @@ const TRANSLATIONS: Record<Exclude<LanguageId, "default">, UiStrings> = {
     inspiredBySuffix: "",
     dotStyleClassic: "Black Dot",
     dotStyleRainbow: "Rainbow Box",
+    dotStyleLineBar: "Line Bar",
     menuSoundLabel: "Sonido del menú",
     menuSoundOff: "Apagado",
     menuSoundSoft: "Suave",
@@ -211,6 +214,7 @@ const TRANSLATIONS: Record<Exclude<LanguageId, "default">, UiStrings> = {
     inspiredBySuffix: "",
     dotStyleClassic: "Black Dot",
     dotStyleRainbow: "Rainbow Box",
+    dotStyleLineBar: "Line Bar",
     menuSoundLabel: "Son du menu",
     menuSoundOff: "Désactivé",
     menuSoundSoft: "Doux",
@@ -265,6 +269,7 @@ const TRANSLATIONS: Record<Exclude<LanguageId, "default">, UiStrings> = {
     inspiredBySuffix: "に着想",
     dotStyleClassic: "Black Dot",
     dotStyleRainbow: "Rainbow Box",
+    dotStyleLineBar: "Line Bar",
     menuSoundLabel: "メニュー音",
     menuSoundOff: "オフ",
     menuSoundSoft: "ソフト",
@@ -319,6 +324,7 @@ const TRANSLATIONS: Record<Exclude<LanguageId, "default">, UiStrings> = {
     inspiredBySuffix: "से प्रेरित",
     dotStyleClassic: "Black Dot",
     dotStyleRainbow: "Rainbow Box",
+    dotStyleLineBar: "Line Bar",
     menuSoundLabel: "मेनू साउंड",
     menuSoundOff: "बंद",
     menuSoundSoft: "सॉफ्ट",
@@ -373,6 +379,7 @@ const TRANSLATIONS: Record<Exclude<LanguageId, "default">, UiStrings> = {
     inspiredBySuffix: "থেকে অনুপ্রাণিত",
     dotStyleClassic: "Black Dot",
     dotStyleRainbow: "Rainbow Box",
+    dotStyleLineBar: "Line Bar",
     menuSoundLabel: "মেনু সাউন্ড",
     menuSoundOff: "বন্ধ",
     menuSoundSoft: "সফট",
@@ -471,7 +478,12 @@ export function buildLanguageOptions(strings: UiStrings): SelectOption[] {
 export function buildDotStyleOptions(strings: UiStrings): SelectOption[] {
   return DOT_STYLE_IDS.map((id) => ({
     id,
-    label: id === "classic" ? strings.dotStyleClassic : strings.dotStyleRainbow
+    label:
+      id === "classic"
+        ? strings.dotStyleClassic
+        : id === "rainbow"
+        ? strings.dotStyleRainbow
+        : strings.dotStyleLineBar
   }));
 }
 

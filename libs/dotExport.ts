@@ -169,6 +169,11 @@ export function renderDotsToCanvas({
       ctx.arc(x + dotSize / 2, y + dotSize / 2, dotSize / 2, 0, Math.PI * 2);
       ctx.closePath();
       ctx.fill();
+    } else if (dotStyle === "lineBar") {
+      const barWidth = Math.max(1.5, dotSize * 0.34);
+      const barX = x + (dotSize - barWidth) / 2;
+      ctx.fillStyle = isFilled ? palette.filled : palette.empty;
+      drawRoundedRect(ctx, barX, y, barWidth, dotSize, Math.max(1, barWidth / 2));
     } else {
       ctx.fillStyle = isFilled
         ? palette.rainbow[index % palette.rainbow.length]
@@ -272,6 +277,11 @@ export async function renderCardToCanvas({
       ctx.arc(x + dotSize / 2, y + dotSize / 2, dotSize / 2, 0, Math.PI * 2);
       ctx.closePath();
       ctx.fill();
+    } else if (dotStyle === "lineBar") {
+      const barWidth = Math.max(1.5, dotSize * 0.34);
+      const barX = x + (dotSize - barWidth) / 2;
+      ctx.fillStyle = isFilled ? palette.filled : palette.empty;
+      drawRoundedRect(ctx, barX, y, barWidth, dotSize, Math.max(1, barWidth / 2));
     } else {
       ctx.fillStyle = isFilled
         ? palette.rainbow[index % palette.rainbow.length]

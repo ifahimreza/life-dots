@@ -8,6 +8,7 @@ import ExportModal from "../components/ExportModal";
 import FlagIcon from "../components/FlagIcon";
 import ProfileDrawer from "../components/ProfileDrawer";
 import ProgressCard from "../components/ProgressCard";
+import UpgradeModal from "../components/UpgradeModal";
 import {
   CountryOption,
   GRID_AXIS_OFFSET,
@@ -273,6 +274,7 @@ export default function MainPage() {
   const [mounted, setMounted] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
   const gridContainerRef = useRef<HTMLDivElement>(null);
   const searchParams = useSearchParams();
   const {
@@ -558,6 +560,9 @@ export default function MainPage() {
             onOpenSettings={() => {
               setIsModalOpen(true);
             }}
+            onOpenUpgrade={() => {
+              setIsUpgradeModalOpen(true);
+            }}
             isSignedIn={Boolean(userId)}
             hasAccess={hasAccess}
             authEmail={authEmail}
@@ -607,6 +612,17 @@ export default function MainPage() {
         title={viewTitle}
         weeksText={progressLabel}
         percentText={percentLabel}
+      />
+
+      <UpgradeModal
+        isOpen={isUpgradeModalOpen}
+        onClose={() => setIsUpgradeModalOpen(false)}
+        supabase={supabaseClient}
+        userId={userId}
+        email={authEmail}
+        name={name}
+        hasAccess={hasAccess}
+        onSignIn={handleSignIn}
       />
 
       <section className="w-full bg-white py-12 sm:py-16">

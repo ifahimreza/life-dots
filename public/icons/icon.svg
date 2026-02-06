@@ -1,12 +1,22 @@
 <svg width="512" height="512" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="100" height="100" rx="22" fill="#00C565"/>
-  <circle cx="25" cy="25" r="8" fill="white" fill-opacity="0.88"/>
-  <circle cx="50" cy="25" r="8" fill="white" fill-opacity="0.88"/>
-  <circle cx="75" cy="25" r="8" fill="white" fill-opacity="0.88"/>
-  <circle cx="25" cy="50" r="8" fill="white" fill-opacity="0.88"/>
-  <circle cx="50" cy="50" r="8" fill="white"/>
-  <circle cx="75" cy="50" r="8" fill="white" fill-opacity="0.88"/>
-  <circle cx="25" cy="75" r="8" fill="white" fill-opacity="0.88"/>
-  <circle cx="50" cy="75" r="8" fill="white" fill-opacity="0.88"/>
-  <circle cx="75" cy="75" r="8" fill="white" fill-opacity="0.88"/>
+  <defs>
+    <linearGradient id="frame" x1="5" y1="5" x2="95" y2="95" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ff5d5d"/>
+      <stop offset="0.2" stop-color="#ff9b3d"/>
+      <stop offset="0.4" stop-color="#ffd84a"/>
+      <stop offset="0.6" stop-color="#66d56b"/>
+      <stop offset="0.8" stop-color="#47b8ff"/>
+      <stop offset="1" stop-color="#a56bff"/>
+    </linearGradient>
+  </defs>
+  <rect x="3" y="3" width="94" height="94" rx="21" fill="white" stroke="url(#frame)" stroke-width="6"/>
+  <circle cx="25" cy="25" r="8" fill="#ff5d5d"/>
+  <circle cx="50" cy="25" r="8" fill="#ff9b3d"/>
+  <circle cx="75" cy="25" r="8" fill="#ffd84a"/>
+  <circle cx="25" cy="50" r="8" fill="#66d56b"/>
+  <circle cx="50" cy="50" r="8" fill="#47b8ff"/>
+  <circle cx="75" cy="50" r="8" fill="#5f8dff"/>
+  <circle cx="25" cy="75" r="8" fill="#8a76ff"/>
+  <circle cx="50" cy="75" r="8" fill="#b66aff"/>
+  <circle cx="75" cy="75" r="8" fill="#fc79bc"/>
 </svg>
