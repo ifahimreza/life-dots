@@ -4,8 +4,8 @@
   "description": "See time clearly with a minimalist life dots timeline",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#f5f5f5",
-  "theme_color": "#3a8f7a",
+  "background_color": "#00c565",
+  "theme_color": "#00c565",
   "icons": [
     {
       "src": "/icons/icon.svg",

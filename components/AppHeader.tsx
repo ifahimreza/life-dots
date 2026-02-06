@@ -15,6 +15,7 @@ type AppHeaderProps = {
   onOpenSettings: () => void;
   isSignedIn: boolean;
   hasAccess: boolean;
+  authEmail?: string | null;
   themeId: ThemeId;
   strings: UiStrings;
 };
@@ -22,19 +23,13 @@ type AppHeaderProps = {
 type NavItem = {
   href: string;
   label: string;
-  kind: "home" | "dashboard" | "login" | "plus";
+  kind: "home" | "dashboard" | "billing" | "login" | "plus";
 };
-
-const navItems: NavItem[] = [
-  {href: "/", label: "Home", kind: "home"},
-  {href: "/dashboard", label: "Dashboard", kind: "dashboard"},
-  {href: "/login", label: "Login", kind: "login"},
-  {href: "/plus", label: "Plus", kind: "plus"}
-];
 
 function isItemActive(pathname: string, item: NavItem) {
   if (item.kind === "home") return pathname === "/" || pathname === "/app";
   if (item.kind === "dashboard") return pathname.startsWith("/dashboard");
+  if (item.kind === "billing") return pathname.startsWith("/settings");
   if (item.kind === "login") return pathname.startsWith("/login");
   if (item.kind === "plus") return pathname.startsWith("/plus");
   return false;
@@ -55,6 +50,14 @@ function getItemIcon(kind: NavItem["kind"]) {
         d="M4 4h7v7H4V4Zm9 0h7v4h-7V4Zm0 6h7v10h-7V10ZM4 13h7v7H4v-7Z"
         fill="currentColor"
       />
+    );
+  }
+  if (kind === "billing") {
+    return (
+      <>
+        <path d="M3.75 8.25A2.25 2.25 0 0 1 6 6h12a2.25 2.25 0 0 1 2.25 2.25v7.5A2.25 2.25 0 0 1 18 18H6a2.25 2.25 0 0 1-2.25-2.25v-7.5Z" />
+        <path d="M3.75 10.5h16.5" />
+      </>
     );
   }
   if (kind === "login") {
@@ -78,11 +81,25 @@ export default function AppHeader({
   onOpenSettings,
   isSignedIn,
   hasAccess,
+  authEmail,
   themeId,
   strings
 }: AppHeaderProps) {
   const pathname = usePathname();
   const isClassicTheme = themeId === "classic";
+  const avatarLetter = (authEmail?.trim()?.charAt(0) || "U").toUpperCase();
+  const navItems: NavItem[] =
+    isSignedIn && hasAccess
+      ? [
+          {href: "/", label: "Home", kind: "home"},
+          {href: "/dashboard", label: "Dashboard", kind: "dashboard"},
+          {href: "/settings?tab=billing", label: "Billing", kind: "billing"}
+        ]
+      : [
+          {href: "/", label: "Home", kind: "home"},
+          {href: "/login", label: "Login", kind: "login"},
+          {href: "/plus", label: "Plus", kind: "plus"}
+        ];
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -97,7 +114,7 @@ export default function AppHeader({
 
   return (
     <header
-      className={`flex flex-col gap-4 rounded-[30px] border border-surface px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 ${
+      className={`mb-24 flex flex-col gap-4 rounded-[30px] border border-surface px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 ${
         isClassicTheme
           ? "bg-white"
           : "bg-[linear-gradient(135deg,rgba(78,85,224,0.08),rgba(247,205,99,0.11),rgba(184,235,124,0.09))]"
@@ -117,8 +134,9 @@ export default function AppHeader({
           {navItems.map((item) => {
             const active = isItemActive(pathname, item);
             const isPlusItem = item.kind === "plus";
-            const nextHref = item.kind === "login" && isSignedIn ? "/settings" : item.href;
-            const nextLabel = item.kind === "login" && isSignedIn ? "Account" : item.label;
+            const nextHref = item.href;
+            const nextLabel = item.label;
+            const showAvatar = item.kind === "dashboard" && isSignedIn && hasAccess;
 
             return (
               <Link
@@ -141,18 +159,24 @@ export default function AppHeader({
                 title={nextLabel}
                 data-tip={nextLabel}
               >
-                <svg
-                  aria-hidden="true"
-                  viewBox="0 0 24 24"
-                  className="h-4 w-4"
-                  fill={item.kind === "home" || item.kind === "dashboard" ? "currentColor" : "none"}
-                  stroke={item.kind === "home" || item.kind === "dashboard" ? "none" : "currentColor"}
-                  strokeWidth="1.7"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  {getItemIcon(item.kind)}
-                </svg>
+                {showAvatar ? (
+                  <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-neutral-900 text-[10px] font-semibold text-white">
+                    {avatarLetter}
+                  </span>
+                ) : (
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 24 24"
+                    className="h-4 w-4"
+                    fill={item.kind === "home" || item.kind === "dashboard" ? "currentColor" : "none"}
+                    stroke={item.kind === "home" || item.kind === "dashboard" ? "none" : "currentColor"}
+                    strokeWidth="1.7"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    {getItemIcon(item.kind)}
+                  </svg>
+                )}
                 <span className="sr-only">{nextLabel}</span>
               </Link>
             );

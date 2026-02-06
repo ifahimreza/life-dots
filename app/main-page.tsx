@@ -1,7 +1,7 @@
 "use client";
 
 import {useEffect, useMemo, useRef, useState} from "react";
-import {useRouter, useSearchParams} from "next/navigation";
+import {useSearchParams} from "next/navigation";
 import AppFooter from "../components/AppFooter";
 import AppHeader from "../components/AppHeader";
 import ExportModal from "../components/ExportModal";
@@ -274,7 +274,6 @@ export default function MainPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const gridContainerRef = useRef<HTMLDivElement>(null);
-  const router = useRouter();
   const searchParams = useSearchParams();
   const {
     supabase: supabaseClient,
@@ -529,10 +528,6 @@ export default function MainPage() {
   );
   const percentLabel = formatLocalePercent(viewState.percent, resolvedLocale);
 
-  const handleUpgrade = () => {
-    router.push("/plus");
-  };
-
   const faqItems = useMemo(
     () => landingCopy.faqItems,
     [landingCopy]
@@ -565,6 +560,7 @@ export default function MainPage() {
             }}
             isSignedIn={Boolean(userId)}
             hasAccess={hasAccess}
+            authEmail={authEmail}
             themeId={themeId}
             strings={strings}
           />

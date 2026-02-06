@@ -69,12 +69,13 @@ export default function ProgressCard({
             onClick={onOpenExport}
             aria-label={strings.download}
             title={strings.download}
-            className="ui-tooltip inline-flex h-8 w-8 items-center justify-center rounded-full border border-surface bg-white/85 text-muted transition hover:border-neutral-300 hover:text-main"
+            data-tip={strings.download}
+            className="ui-tooltip inline-flex items-center gap-1.5 rounded-full border border-surface bg-white/90 px-3 py-1.5 text-xs font-semibold text-muted transition hover:border-neutral-300 hover:text-main"
           >
             <svg
               aria-hidden="true"
               viewBox="0 0 24 24"
-              className="h-4 w-4"
+              className="h-3.5 w-3.5"
               fill="none"
               stroke="currentColor"
               strokeWidth="1.5"
@@ -83,6 +84,7 @@ export default function ProgressCard({
             >
               <path d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0-3-3m3 3 3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />
             </svg>
+            <span>{strings.download}</span>
           </button>
         </div>
       </div>

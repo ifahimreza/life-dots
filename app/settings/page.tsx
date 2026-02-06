@@ -98,6 +98,16 @@ export default function SettingsPage() {
     setLanguage((parsed?.language ?? "default") as LanguageId);
   }, []);
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("tab") === "billing") {
+      setActiveTab("billing");
+      return;
+    }
+    setActiveTab("account");
+  }, []);
+
   const loadPortalData = async () => {
     if (!supabase) return;
     const {data: sessionData} = await supabase.auth.getSession();

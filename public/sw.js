@@ -1,4 +1,4 @@
-const CACHE_NAME = "dotspan-static-v2";
+const CACHE_NAME = "dotspan-static-v3";
 const STATIC_ASSETS = [
   "/manifest.json",
   "/icons/icon.svg"
