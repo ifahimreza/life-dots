@@ -3,6 +3,7 @@
 import Link from "next/link";
 import type {FormEvent} from "react";
 import {useEffect, useMemo, useState} from "react";
+import {useRouter} from "next/navigation";
 import AppFooter from "../../components/AppFooter";
 import GoogleButton from "../../components/GoogleButton";
 import {LanguageId} from "../../libs/lifeDotsData";
@@ -65,6 +66,7 @@ function formatDate(value?: string | null) {
 }
 
 export default function SettingsPage() {
+  const router = useRouter();
   const [language, setLanguage] = useState<LanguageId>("default");
   const [activeTab, setActiveTab] = useState<"account" | "billing">("account");
   const [portalData, setPortalData] = useState<PortalData | null>(null);
@@ -75,6 +77,8 @@ export default function SettingsPage() {
   const [billingMessage, setBillingMessage] = useState<string | null>(null);
   const [cancelMessage, setCancelMessage] = useState<string | null>(null);
   const [isCancelling, setIsCancelling] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteMessage, setDeleteMessage] = useState<string | null>(null);
 
   const {
     supabase,
@@ -203,6 +207,35 @@ export default function SettingsPage() {
     }
   };
 
+  const handleDeleteAccount = async () => {
+    if (!supabase || !userId || isDeleting) return;
+    setIsDeleting(true);
+    setDeleteMessage(null);
+    try {
+      const {data: sessionData} = await supabase.auth.getSession();
+      const token = sessionData.session?.access_token;
+      if (!token) {
+        throw new Error("Please sign in again.");
+      }
+      const response = await fetch("/api/account/delete", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      const payload = (await response.json().catch(() => null)) as {error?: string} | null;
+      if (!response.ok) {
+        throw new Error(payload?.error || "Could not delete account.");
+      }
+      await signOut();
+      router.replace("/login");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Could not delete account.";
+      setDeleteMessage(message);
+      setIsDeleting(false);
+    }
+  };
+
   return (
     <main className="flex min-h-screen flex-col py-4 sm:py-6">
       <section className="mx-auto flex w-full max-w-[980px] flex-1 flex-col gap-6 px-4 sm:px-6">
@@ -287,6 +320,25 @@ export default function SettingsPage() {
                     >
                       Go Plus
                     </Link>
+                  </div>
+                  <div className="rounded-2xl border border-rose-200 bg-rose-50 p-4">
+                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-rose-700">
+                      Danger zone
+                    </p>
+                    <p className="mt-2 text-xs text-rose-700">
+                      Delete your account and profile data in one click.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => void handleDeleteAccount()}
+                      disabled={isDeleting}
+                      className="mt-3 inline-flex items-center justify-center rounded-full bg-rose-600 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-70"
+                    >
+                      {isDeleting ? "Deleting..." : "Delete account"}
+                    </button>
+                    {deleteMessage ? (
+                      <p className="mt-2 text-xs text-rose-700">{deleteMessage}</p>
+                    ) : null}
                   </div>
                 </div>
               ) : (
@@ -376,24 +428,27 @@ export default function SettingsPage() {
                     )}
                   </div>
 
-                  {primarySubscription?.cancelRenewalUrl ? (
-                    <div className="rounded-2xl border border-neutral-200 bg-white p-4">
-                      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-subtle">
-                        Cancellation
+                  <div className="rounded-2xl border border-neutral-200 bg-white p-4">
+                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-subtle">
+                      Cancellation
+                    </p>
+                    <button
+                      type="button"
+                      onClick={handleCancelRenewal}
+                      disabled={isCancelling || !primarySubscription?.cancelRenewalUrl}
+                      className="mt-3 inline-flex items-center justify-center rounded-full border border-neutral-200 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-neutral-700 transition hover:border-neutral-400 disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                      {isCancelling ? "Processing..." : "Cancel renewal"}
+                    </button>
+                    {!primarySubscription?.cancelRenewalUrl ? (
+                      <p className="mt-2 text-xs text-muted">
+                        No cancellable renewal is available for this plan.
                       </p>
-                      <button
-                        type="button"
-                        onClick={handleCancelRenewal}
-                        disabled={isCancelling}
-                        className="mt-3 inline-flex items-center justify-center rounded-full border border-neutral-200 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-neutral-700 transition hover:border-neutral-400 disabled:cursor-not-allowed"
-                      >
-                        {isCancelling ? "Processing..." : "Cancel renewal"}
-                      </button>
-                      {cancelMessage ? (
-                        <p className="mt-2 text-xs text-muted">{cancelMessage}</p>
-                      ) : null}
-                    </div>
-                  ) : null}
+                    ) : null}
+                    {cancelMessage ? (
+                      <p className="mt-2 text-xs text-muted">{cancelMessage}</p>
+                    ) : null}
+                  </div>
 
                   {portalData?.billing?.updateUrl ? (
                     <div className="rounded-2xl border border-neutral-200 bg-white p-4">

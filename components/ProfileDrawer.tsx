@@ -65,6 +65,27 @@ export default function ProfileDrawer({
   dotStyleOptions,
   strings
 }: ProfileDrawerProps) {
+  const fieldChrome = {
+    borderRadius: "14px",
+    backgroundColor: "transparent",
+    borderColor: "rgba(15, 23, 42, 0.12)",
+    boxShadow: "none"
+  };
+
+  const selectOverrides = {
+    ControlContainer: {
+      style: {
+        minHeight: "40px",
+        ...fieldChrome
+      }
+    },
+    Input: {style: {fontSize: "13px"}},
+    Placeholder: {style: {fontSize: "13px", color: "#94a3b8"}},
+    SingleValue: {style: {fontSize: "13px"}},
+    ValueContainer: {style: {paddingLeft: "12px", paddingRight: "12px"}},
+    IconsContainer: {style: {paddingRight: "8px"}}
+  } as const;
+
   const selectedCountry = countryOptions.find((option) => option.id === draftCountry);
   const baseExpectancy = selectedCountry?.expectancy;
   const rangePadding = 20;
@@ -136,7 +157,7 @@ export default function ProfileDrawer({
           className="space-y-4"
         >
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-main">
+            <h2 className="text-base font-semibold text-main">
               {strings.profileTitle}
             </h2>
             <button
@@ -147,6 +168,9 @@ export default function ProfileDrawer({
               {strings.close}
             </button>
           </div>
+          <p className="text-xs text-muted">
+            Update your core profile settings.
+          </p>
           <div className="grid gap-4">
             <div className="space-y-1.5">
               <label className="text-[11px] font-semibold uppercase tracking-wide text-muted">
@@ -162,14 +186,7 @@ export default function ProfileDrawer({
                 size="compact"
                 overrides={{
                   Root: {
-                    style: {
-                      backgroundColor: "transparent",
-                      borderColor: "rgba(15, 23, 42, 0.12)",
-                      borderTopLeftRadius: "14px",
-                      borderTopRightRadius: "14px",
-                      borderBottomLeftRadius: "14px",
-                      borderBottomRightRadius: "14px"
-                    }
+                    style: fieldChrome
                   },
                   Input: {
                     style: {
@@ -201,35 +218,7 @@ export default function ProfileDrawer({
                 onChange={(params) =>
                   onDraftCountryChange((params.value[0]?.id as string) ?? "")
                 }
-                overrides={{
-                  ControlContainer: {
-                    style: {
-                      minHeight: "40px",
-                      borderTopLeftRadius: "14px",
-                      borderTopRightRadius: "14px",
-                      borderBottomLeftRadius: "14px",
-                      borderBottomRightRadius: "14px",
-                      backgroundColor: "transparent",
-                      borderColor: "rgba(15, 23, 42, 0.12)",
-                      boxShadow: "none"
-                    }
-                  },
-                  Input: {
-                    style: {fontSize: "13px"}
-                  },
-                  Placeholder: {
-                    style: {fontSize: "13px", color: "#94a3b8"}
-                  },
-                  SingleValue: {
-                    style: {fontSize: "13px"}
-                  },
-                  ValueContainer: {
-                    style: {paddingLeft: "12px", paddingRight: "12px"}
-                  },
-                  IconsContainer: {
-                    style: {paddingRight: "8px"}
-                  }
-                }}
+                overrides={selectOverrides}
               />
             </div>
             <div className="space-y-1.5">
@@ -250,12 +239,7 @@ export default function ProfileDrawer({
                   overrides={{
                     Input: {
                       style: {
-                        borderTopLeftRadius: "14px",
-                        borderTopRightRadius: "14px",
-                        borderBottomLeftRadius: "14px",
-                        borderBottomRightRadius: "14px",
-                        backgroundColor: "transparent",
-                        borderColor: "rgba(15, 23, 42, 0.12)",
+                        ...fieldChrome,
                         minHeight: "40px",
                         fontSize: "13px",
                         color: "#0f172a",
@@ -283,14 +267,7 @@ export default function ProfileDrawer({
                   size="compact"
                   overrides={{
                     Root: {
-                      style: {
-                        backgroundColor: "transparent",
-                        borderColor: "rgba(15, 23, 42, 0.12)",
-                        borderTopLeftRadius: "14px",
-                        borderTopRightRadius: "14px",
-                        borderBottomLeftRadius: "14px",
-                        borderBottomRightRadius: "14px"
-                      }
+                      style: fieldChrome
                     },
                     Input: {
                       style: {
@@ -333,25 +310,7 @@ export default function ProfileDrawer({
                 onChange={(params) =>
                   onDraftDotStyleChange((params.value[0]?.id as DotStyle) ?? "classic")
                 }
-                overrides={{
-                  ControlContainer: {
-                    style: {
-                      minHeight: "40px",
-                      borderTopLeftRadius: "14px",
-                      borderTopRightRadius: "14px",
-                      borderBottomLeftRadius: "14px",
-                      borderBottomRightRadius: "14px",
-                      backgroundColor: "transparent",
-                      borderColor: "rgba(15, 23, 42, 0.12)",
-                      boxShadow: "none"
-                    }
-                  },
-                  Input: {style: {fontSize: "13px"}},
-                  Placeholder: {style: {fontSize: "13px", color: "#94a3b8"}},
-                  SingleValue: {style: {fontSize: "13px"}},
-                  ValueContainer: {style: {paddingLeft: "12px", paddingRight: "12px"}},
-                  IconsContainer: {style: {paddingRight: "8px"}}
-                }}
+                overrides={selectOverrides}
               />
             </div>
             <div className="space-y-1.5">
@@ -370,25 +329,7 @@ export default function ProfileDrawer({
                   setMenuSound(next);
                   setMenuSoundMode(next);
                 }}
-                overrides={{
-                  ControlContainer: {
-                    style: {
-                      minHeight: "40px",
-                      borderTopLeftRadius: "14px",
-                      borderTopRightRadius: "14px",
-                      borderBottomLeftRadius: "14px",
-                      borderBottomRightRadius: "14px",
-                      backgroundColor: "transparent",
-                      borderColor: "rgba(15, 23, 42, 0.12)",
-                      boxShadow: "none"
-                    }
-                  },
-                  Input: {style: {fontSize: "13px"}},
-                  Placeholder: {style: {fontSize: "13px", color: "#94a3b8"}},
-                  SingleValue: {style: {fontSize: "13px"}},
-                  ValueContainer: {style: {paddingLeft: "12px", paddingRight: "12px"}},
-                  IconsContainer: {style: {paddingRight: "8px"}}
-                }}
+                overrides={selectOverrides}
               />
             </div>
           </div>

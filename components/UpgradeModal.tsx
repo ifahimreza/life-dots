@@ -21,27 +21,27 @@ type UpgradeModalProps = {
 const featureItems = [
   {
     id: "pdf",
-    icon: "🖨",
+    icon: "✦",
     label: "Print-ready export",
-    detail: "Open a clean print view and save as PDF."
+    detail: "Save clean timeline output as PDF."
   },
   {
     id: "editor",
-    icon: "🎛",
+    icon: "◌",
     label: "Ready-for-print editor",
-    detail: "Adjust size, paper, colors, and typography."
+    detail: "Adjust paper size, color, and typography."
   },
   {
     id: "paper",
-    icon: "📄",
+    icon: "▣",
     label: "Paper presets",
-    detail: "Export tuned for Letter and A4."
+    detail: "Letter and A4 presets built in."
   },
   {
     id: "restore",
-    icon: "♻️",
+    icon: "↺",
     label: "Purchase restore",
-    detail: "Restore Plus access from billing anytime."
+    detail: "Restore access from billing anytime."
   }
 ] as const;
 
@@ -64,7 +64,6 @@ export default function UpgradeModal({
   const lifetimePrice = Number(config.freemius?.plans?.lifetime?.price ?? 48);
   const yearlyMonthlyPrice = useMemo(() => (yearlyPrice / 12).toFixed(2), [yearlyPrice]);
 
-  const selectedPrice = selectedPlan === "lifetime" ? lifetimePrice : yearlyPrice;
   const ctaLabel = selectedPlan === "lifetime" ? "Get Lifetime Access" : "Get Yearly Access";
   const ctaPrice = selectedPlan === "lifetime" ? `$${lifetimePrice}` : `$${yearlyPrice}`;
 
@@ -137,22 +136,27 @@ export default function UpgradeModal({
 
   return (
     <div
-      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/35 px-4 py-6"
+      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 px-3 py-4 sm:px-4 sm:py-6"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-[410px] overflow-hidden rounded-2xl border border-surface bg-white p-4 shadow-[0_24px_70px_rgba(0,0,0,0.25)] sm:p-5"
-        style={{maxHeight: "min(650px, calc(100vh - 24px))"}}
+        className="w-full max-w-[420px] overflow-hidden rounded-[28px] border border-[#ece8e2] bg-[#fbfaf8] p-4 shadow-[0_28px_80px_rgba(15,23,42,0.32)] sm:p-5"
+        style={{
+          maxHeight: "min(650px, calc(100vh - 20px))",
+          backgroundImage:
+            "radial-gradient(circle at 1px 1px, rgba(201,106,50,0.09) 1px, transparent 0)",
+          backgroundSize: "16px 16px"
+        }}
         onClick={(event) => event.stopPropagation()}
       >
         <div className="flex items-center justify-between">
-          <span className="inline-flex items-center rounded-full bg-[#c96a32] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-white">
+          <span className="inline-flex items-center rounded-full bg-[#c96a32] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-white shadow-[0_6px_16px_rgba(201,106,50,0.3)]">
             DotSpan Plus
           </span>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-md px-2 py-1 text-xl leading-none text-muted transition hover:text-main"
+            className="rounded-lg px-2 py-1 text-[26px] leading-none text-[#8b8278] transition hover:text-[#221f1b]"
             aria-label="Close upgrade modal"
           >
             ×
@@ -160,65 +164,79 @@ export default function UpgradeModal({
         </div>
 
         <div className="mt-2">
-          <h2 className="text-center text-[34px] font-semibold leading-tight text-main">
+          <h2 className="text-center text-[52px] font-semibold leading-[0.95] text-[#201b18]">
             Unlock everything
           </h2>
-          <p className="mt-1 text-center text-sm leading-5 text-muted">
-            Build your timeline and export clean print-ready versions.
+          <p className="mt-2 text-center text-[15px] leading-6 text-[#746d66]">
+            Create, export, and keep your timeline forever.
           </p>
 
-          <div className="mt-4 grid gap-2 sm:grid-cols-2">
+          <div className="mt-4 grid gap-2.5 sm:grid-cols-2">
             <button
               type="button"
               onClick={() => setSelectedPlan("yearly")}
-              className={`rounded-2xl border p-3 text-left transition ${
+              className={`rounded-3xl border p-3 text-left transition ${
                 selectedPlan === "yearly"
-                  ? "border-[#c96a32] bg-[#fff9f5]"
-                  : "border-surface bg-white hover:border-neutral-300"
+                  ? "border-[#c96a32] bg-[#fff8f2]"
+                  : "border-[#e6e1da] bg-[#fffdfb] hover:border-[#d8d1c7]"
               }`}
             >
-              <div className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-neutral-300 text-[9px]">
-                {selectedPlan === "yearly" ? "●" : ""}
+              <div
+                className={`inline-flex h-7 w-7 items-center justify-center rounded-full border text-[9px] ${
+                  selectedPlan === "yearly"
+                    ? "border-[#c96a32] text-[#c96a32]"
+                    : "border-[#d8d1c7] text-transparent"
+                }`}
+              >
+                ●
               </div>
-              <p className="mt-1 text-sm font-semibold text-main">Yearly</p>
-              <p className="mt-1 text-[34px] font-semibold leading-none text-main">${yearlyPrice}</p>
-              <p className="text-sm text-muted">${yearlyMonthlyPrice}/mo</p>
+              <p className="mt-1 text-sm font-semibold text-[#211d19]">Yearly</p>
+              <p className="mt-1 text-[33px] font-medium leading-none text-[#1f1b18]">${yearlyPrice}</p>
+              <p className="mt-1 text-[13px] text-[#80786f]">/ year</p>
+              <p className="mt-2 text-[13px] text-[#80786f]">${yearlyMonthlyPrice}/mo</p>
             </button>
 
             <button
               type="button"
               onClick={() => setSelectedPlan("lifetime")}
-              className={`relative rounded-2xl border p-3 text-left transition ${
+              className={`relative rounded-3xl border p-3 text-left transition ${
                 selectedPlan === "lifetime"
-                  ? "border-[#c96a32] bg-[#fff9f5]"
-                  : "border-surface bg-white hover:border-neutral-300"
+                  ? "border-[#c96a32] bg-[#fff8f2]"
+                  : "border-[#e6e1da] bg-[#fffdfb] hover:border-[#d8d1c7]"
               }`}
             >
-              <span className="absolute -top-2.5 left-3 rounded-full bg-[#c96a32] px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.1em] text-white">
+              <span className="absolute -top-2.5 right-3 rounded-full bg-[#c96a32] px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.1em] text-white">
                 Best value
               </span>
-              <div className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-neutral-300 text-[9px]">
-                {selectedPlan === "lifetime" ? "●" : ""}
+              <div
+                className={`inline-flex h-7 w-7 items-center justify-center rounded-full border text-[9px] ${
+                  selectedPlan === "lifetime"
+                    ? "border-[#c96a32] text-[#c96a32]"
+                    : "border-[#d8d1c7] text-transparent"
+                }`}
+              >
+                ●
               </div>
-              <p className="mt-1 text-sm font-semibold text-main">Lifetime</p>
-              <p className="mt-1 text-[34px] font-semibold leading-none text-main">${lifetimePrice}</p>
-              <p className="text-sm text-muted">Pay once</p>
+              <p className="mt-1 text-sm font-semibold text-[#211d19]">Lifetime</p>
+              <p className="mt-1 text-[33px] font-medium leading-none text-[#1f1b18]">${lifetimePrice}</p>
+              <p className="mt-1 text-[13px] text-[#80786f]">once</p>
+              <p className="mt-2 text-[13px] text-[#80786f]">Pay once, yours forever</p>
             </button>
           </div>
 
-          <div className="mt-4 divide-y divide-surface border-y border-surface">
+          <div className="mt-4 divide-y divide-[#ece8e2] border-y border-[#ece8e2] bg-[#fbfaf8]">
             {featureItems.map((item) => (
               <div key={item.id} className="flex items-center justify-between py-2">
                 <div className="flex items-center gap-3">
-                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#fff5ed] text-sm">
+                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-[#fff1e7] text-sm text-[#c96a32]">
                     {item.icon}
                   </span>
                   <div>
-                    <p className="text-sm font-medium leading-5 text-main">{item.label}</p>
-                    <p className="text-xs text-muted">{item.detail}</p>
+                    <p className="text-sm font-medium leading-5 text-[#211d19]">{item.label}</p>
+                    <p className="text-xs text-[#80786f]">{item.detail}</p>
                   </div>
                 </div>
-                <span className="text-base text-[#16a34a]">✓</span>
+                <span className="text-base text-[#0f9f49]">✓</span>
               </div>
             ))}
           </div>
@@ -233,16 +251,16 @@ export default function UpgradeModal({
             type="button"
             onClick={() => void handleCheckout()}
             disabled={isLoading}
-            className="mt-4 w-full rounded-xl bg-[#c96a32] px-5 py-3 text-base font-semibold text-white transition hover:bg-[#b85e29] disabled:cursor-not-allowed disabled:opacity-70"
+            className="mt-4 w-full rounded-2xl bg-[#c96a32] px-5 py-3 text-base font-semibold text-white transition hover:bg-[#b85e29] disabled:cursor-not-allowed disabled:opacity-70"
           >
-            {isLoading ? "Starting checkout..." : `${ctaLabel} — ${ctaPrice}`}
+            {isLoading ? "Starting checkout..." : `${ctaLabel} - ${ctaPrice}`}
           </button>
 
-          <div className="mt-3 flex items-center justify-center gap-3 text-sm text-muted">
+          <div className="mt-3 flex items-center justify-center gap-3 text-sm text-[#80786f]">
             <button
               type="button"
               onClick={handleRestore}
-              className="transition hover:text-main"
+              className="transition hover:text-[#201b18]"
             >
               Restore purchase
             </button>
@@ -250,7 +268,7 @@ export default function UpgradeModal({
             <button
               type="button"
               onClick={onClose}
-              className="transition hover:text-main"
+              className="transition hover:text-[#201b18]"
             >
               Maybe later
             </button>
