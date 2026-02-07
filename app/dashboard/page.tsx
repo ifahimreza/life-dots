@@ -95,7 +95,7 @@ export default function DashboardPage() {
               </Link>
               {!hasAccess ? (
                 <Link
-                  href="/plus"
+                  href="/?upgrade=1"
                   className="rounded-2xl bg-neutral-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-neutral-800"
                 >
                   Upgrade to Plus

@@ -19,10 +19,30 @@ type UpgradeModalProps = {
 };
 
 const featureItems = [
-  {id: "creation", label: "Unlimited creation"},
-  {id: "styles", label: "Custom style & font options"},
-  {id: "prints", label: "High-resolution print exports"},
-  {id: "backup", label: "Auto backups for your timelines"}
+  {
+    id: "pdf",
+    icon: "🖨",
+    label: "Print-ready export",
+    detail: "Open a clean print view and save as PDF."
+  },
+  {
+    id: "editor",
+    icon: "🎛",
+    label: "Ready-for-print editor",
+    detail: "Adjust size, paper, colors, and typography."
+  },
+  {
+    id: "paper",
+    icon: "📄",
+    label: "Paper presets",
+    detail: "Export tuned for Letter and A4."
+  },
+  {
+    id: "restore",
+    icon: "♻️",
+    label: "Purchase restore",
+    detail: "Restore Plus access from billing anytime."
+  }
 ] as const;
 
 export default function UpgradeModal({
@@ -121,10 +141,14 @@ export default function UpgradeModal({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-[860px] rounded-[28px] border border-surface bg-white p-5 shadow-[0_30px_100px_rgba(0,0,0,0.25)] sm:p-7"
+        className="w-full max-w-[410px] overflow-hidden rounded-2xl border border-surface bg-white p-4 shadow-[0_24px_70px_rgba(0,0,0,0.25)] sm:p-5"
+        style={{maxHeight: "min(650px, calc(100vh - 24px))"}}
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="flex justify-end">
+        <div className="flex items-center justify-between">
+          <span className="inline-flex items-center rounded-full bg-[#c96a32] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-white">
+            DotSpan Plus
+          </span>
           <button
             type="button"
             onClick={onClose}
@@ -135,66 +159,66 @@ export default function UpgradeModal({
           </button>
         </div>
 
-        <div className="mx-auto max-w-[720px]">
-          <div className="mx-auto inline-flex items-center rounded-full bg-[#c96a32] px-4 py-2 text-xs font-semibold uppercase tracking-[0.15em] text-white">
-            DotSpan Plus
-          </div>
-          <h2 className="mt-4 text-center text-4xl font-semibold leading-tight text-main">
+        <div className="mt-2">
+          <h2 className="text-center text-[34px] font-semibold leading-tight text-main">
             Unlock everything
           </h2>
-          <p className="mt-3 text-center text-lg text-muted">
-            Create, export, and keep your timelines forever.
+          <p className="mt-1 text-center text-sm leading-5 text-muted">
+            Build your timeline and export clean print-ready versions.
           </p>
 
-          <div className="mt-7 grid gap-4 sm:grid-cols-2">
+          <div className="mt-4 grid gap-2 sm:grid-cols-2">
             <button
               type="button"
               onClick={() => setSelectedPlan("yearly")}
-              className={`rounded-3xl border p-5 text-left transition ${
+              className={`rounded-2xl border p-3 text-left transition ${
                 selectedPlan === "yearly"
                   ? "border-[#c96a32] bg-[#fff9f5]"
                   : "border-surface bg-white hover:border-neutral-300"
               }`}
             >
-              <div className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-neutral-300 text-[10px]">
+              <div className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-neutral-300 text-[9px]">
                 {selectedPlan === "yearly" ? "●" : ""}
               </div>
-              <p className="mt-3 text-3xl font-semibold text-main">${yearlyPrice}</p>
-              <p className="text-lg text-muted">/ year</p>
-              <p className="mt-3 text-sm text-muted">${yearlyMonthlyPrice} / mo</p>
+              <p className="mt-1 text-sm font-semibold text-main">Yearly</p>
+              <p className="mt-1 text-[34px] font-semibold leading-none text-main">${yearlyPrice}</p>
+              <p className="text-sm text-muted">${yearlyMonthlyPrice}/mo</p>
             </button>
 
             <button
               type="button"
               onClick={() => setSelectedPlan("lifetime")}
-              className={`relative rounded-3xl border p-5 text-left transition ${
+              className={`relative rounded-2xl border p-3 text-left transition ${
                 selectedPlan === "lifetime"
                   ? "border-[#c96a32] bg-[#fff9f5]"
                   : "border-surface bg-white hover:border-neutral-300"
               }`}
             >
-              <span className="absolute -top-3 left-4 rounded-full bg-[#c96a32] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-white">
+              <span className="absolute -top-2.5 left-3 rounded-full bg-[#c96a32] px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.1em] text-white">
                 Best value
               </span>
-              <div className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-neutral-300 text-[10px]">
+              <div className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-neutral-300 text-[9px]">
                 {selectedPlan === "lifetime" ? "●" : ""}
               </div>
-              <p className="mt-3 text-3xl font-semibold text-main">${lifetimePrice}</p>
-              <p className="text-lg text-muted">once</p>
-              <p className="mt-3 text-sm text-muted">Pay once, yours forever</p>
+              <p className="mt-1 text-sm font-semibold text-main">Lifetime</p>
+              <p className="mt-1 text-[34px] font-semibold leading-none text-main">${lifetimePrice}</p>
+              <p className="text-sm text-muted">Pay once</p>
             </button>
           </div>
 
-          <div className="mt-7 divide-y divide-surface border-y border-surface">
+          <div className="mt-4 divide-y divide-surface border-y border-surface">
             {featureItems.map((item) => (
-              <div key={item.id} className="flex items-center justify-between py-4">
+              <div key={item.id} className="flex items-center justify-between py-2">
                 <div className="flex items-center gap-3">
-                  <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-[#fff5ed] text-[#c96a32]">
-                    ✦
+                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#fff5ed] text-sm">
+                    {item.icon}
                   </span>
-                  <span className="text-lg text-main">{item.label}</span>
+                  <div>
+                    <p className="text-sm font-medium leading-5 text-main">{item.label}</p>
+                    <p className="text-xs text-muted">{item.detail}</p>
+                  </div>
                 </div>
-                <span className="text-lg text-[#16a34a]">✓</span>
+                <span className="text-base text-[#16a34a]">✓</span>
               </div>
             ))}
           </div>
@@ -209,12 +233,12 @@ export default function UpgradeModal({
             type="button"
             onClick={() => void handleCheckout()}
             disabled={isLoading}
-            className="mt-6 w-full rounded-2xl bg-[#c96a32] px-6 py-4 text-lg font-semibold text-white transition hover:bg-[#b85e29] disabled:cursor-not-allowed disabled:opacity-70"
+            className="mt-4 w-full rounded-xl bg-[#c96a32] px-5 py-3 text-base font-semibold text-white transition hover:bg-[#b85e29] disabled:cursor-not-allowed disabled:opacity-70"
           >
             {isLoading ? "Starting checkout..." : `${ctaLabel} — ${ctaPrice}`}
           </button>
 
-          <div className="mt-4 flex items-center justify-center gap-3 text-base text-muted">
+          <div className="mt-3 flex items-center justify-center gap-3 text-sm text-muted">
             <button
               type="button"
               onClick={handleRestore}
@@ -236,4 +260,3 @@ export default function UpgradeModal({
     </div>
   );
 }
-

@@ -1,5 +1,5 @@
 import {parseDate, type LicenseEntity} from "@freemius/sdk";
-import {getFreemiusClient} from "../../../../libs/freemius";
+import {getFreemiusClient, getMissingFreemiusConfigKeys} from "../../../../libs/freemius";
 import {createSupabaseAdminClient} from "../../../../libs/supabaseAdmin";
 
 function deriveAccessFromLicense(
@@ -68,8 +68,32 @@ async function resolveProfileId({
 }
 
 export async function POST(request: Request) {
-  const freemius = getFreemiusClient();
-  const supabase = createSupabaseAdminClient();
+  const missingFreemiusKeys = getMissingFreemiusConfigKeys();
+  if (missingFreemiusKeys.length > 0) {
+    return Response.json(
+      {
+        error: "Freemius server configuration is missing.",
+        missing: missingFreemiusKeys
+      },
+      {status: 500}
+    );
+  }
+
+  let supabase;
+  try {
+    supabase = createSupabaseAdminClient();
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Missing Supabase service role credentials.";
+    return Response.json({error: message}, {status: 500});
+  }
+
+  let freemius;
+  try {
+    freemius = getFreemiusClient();
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Invalid Freemius configuration.";
+    return Response.json({error: message}, {status: 500});
+  }
 
   const listener = freemius.webhook.createListener();
 
@@ -141,5 +165,10 @@ export async function POST(request: Request) {
     handleEvent
   );
 
-  return freemius.webhook.processFetch(listener, request);
+  try {
+    return freemius.webhook.processFetch(listener, request);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to process Freemius webhook.";
+    return Response.json({error: message}, {status: 500});
+  }
 }

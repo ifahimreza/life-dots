@@ -3,7 +3,6 @@ import Link from "next/link";
 import {usePathname} from "next/navigation";
 import LogoMark from "./LogoMark";
 import type {UiStrings} from "../libs/i18n";
-import type {ThemeId} from "../libs/themes";
 import {
   playHoverSound,
   playMenuSoundFromGesture,
@@ -17,7 +16,6 @@ type AppHeaderProps = {
   isSignedIn: boolean;
   hasAccess: boolean;
   authEmail?: string | null;
-  themeId: ThemeId;
   strings: UiStrings;
 };
 
@@ -84,11 +82,9 @@ export default function AppHeader({
   isSignedIn,
   hasAccess,
   authEmail,
-  themeId,
   strings
 }: AppHeaderProps) {
   const pathname = usePathname();
-  const isClassicTheme = themeId === "classic";
   const avatarLetter = (authEmail?.trim()?.charAt(0) || "U").toUpperCase();
   const navItems: NavItem[] = !isSignedIn
     ? [
@@ -122,11 +118,7 @@ export default function AppHeader({
 
   return (
     <header
-      className={`mb-24 flex flex-col gap-4 rounded-[30px] border border-surface px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 ${
-        isClassicTheme
-          ? "bg-white"
-          : "bg-[linear-gradient(135deg,rgba(78,85,224,0.08),rgba(247,205,99,0.11),rgba(184,235,124,0.09))]"
-      }`}
+      className="mb-8 flex flex-col gap-4 rounded-[30px] border border-surface bg-white px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6"
     >
       <div className="flex items-center gap-3">
         <div className="h-10 w-10 overflow-hidden rounded-2xl border border-surface bg-white/90">

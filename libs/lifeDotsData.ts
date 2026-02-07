@@ -4,7 +4,6 @@ export type ViewMode = "weeks" | "months" | "years";
 export type LanguageId = "default" | "en" | "es" | "fr" | "ja" | "hi" | "bn";
 
 import type {ReactNode} from "react";
-import type {ThemeId} from "./themes";
 
 export type SelectOption = {
   id: string;
@@ -28,7 +27,6 @@ export type Profile = {
   lifeExpectancy?: number;
   hasCustomExpectancy?: boolean;
   dotStyle?: DotStyle;
-  themeId?: ThemeId;
   language?: LanguageId;
   viewMode?: ViewMode;
 };

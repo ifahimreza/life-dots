@@ -1,0 +1,4 @@
+interface:
+  display_name: "DotSpan SaaS Boilerplate"
+  short_description: "Build Next.js SaaS with Supabase + Freemius"
+  default_prompt: "Build or update a Next.js App Router SaaS boilerplate with Supabase auth (Magic Link + Google), Freemius billing, Turnstile anti-spam, Postmark email, protected private routes, API route standards, and SEO defaults from config.js."

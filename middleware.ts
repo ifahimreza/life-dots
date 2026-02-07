@@ -2,7 +2,7 @@ import {NextRequest, NextResponse} from "next/server";
 import {AUTH_TOKEN_COOKIE} from "./libs/authConstants";
 
 const PRIVATE_PREFIXES = ["/dashboard", "/settings", "/onboarding", "/admin"];
-const AUTH_PAGES = ["/login", "/signup"];
+const AUTH_PAGES = ["/login"];
 
 type SupabaseUser = {
   id: string;
@@ -28,6 +28,12 @@ function redirectToLogin(request: NextRequest) {
   const nextPath = `${request.nextUrl.pathname}${request.nextUrl.search}`;
   loginUrl.searchParams.set("next", nextPath);
   return NextResponse.redirect(loginUrl);
+}
+
+function redirectToUpgradeModal(request: NextRequest) {
+  const url = new URL("/", request.url);
+  url.searchParams.set("upgrade", "1");
+  return NextResponse.redirect(url);
 }
 
 async function fetchSupabaseUser(token: string) {
@@ -56,6 +62,9 @@ export async function middleware(request: NextRequest) {
 
   if (pathname === "/signup") {
     return NextResponse.redirect(new URL("/login", request.url));
+  }
+  if (pathname === "/plus") {
+    return redirectToUpgradeModal(request);
   }
 
   const token = request.cookies.get(AUTH_TOKEN_COOKIE)?.value;
@@ -105,7 +114,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|manifest.json|icons|api).*)"
+    "/((?!api|_next/static|_next/image|_next/webpack-hmr|favicon.ico|robots.txt|sitemap.xml|manifest.json|icons|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|js|map|txt)$).*)"
   ]
 };
-

@@ -20,7 +20,6 @@ import {
   formatLocalePercent,
   buildDotStyleOptions,
   buildLanguageOptions,
-  buildViewModeOptions,
   formatProgress,
   getViewTitle,
   getTranslations,
@@ -29,15 +28,7 @@ import {
 } from "../libs/i18n";
 import useDotMetrics from "../libs/useDotMetrics";
 import {getViewState} from "../libs/views";
-import {
-  BASIC_THEME_IDS,
-  DEFAULT_THEME_ID,
-  applyTheme,
-  getBasicThemes,
-  buildThemeOptions,
-  getTheme,
-  THEMES
-} from "../libs/themes";
+import {applyTheme, getTheme} from "../libs/themes";
 import {useProfileState} from "../libs/useProfileState";
 import {useDraftProfile} from "../libs/useDraftProfile";
 import {DEFAULT_PROFILE_STATE, toProfileState} from "../libs/profile";
@@ -52,13 +43,12 @@ type FaqItem = {question: string; answer: string};
 type LandingCopy = {
   introTitle: string;
   introBody: string;
-  aboutLabel: string;
-  aboutTitle: string;
-  aboutBody: string;
-  basicTitle: string;
-  basicItems: string[];
-  premiumTitle: string;
-  premiumItems: string[];
+  trustTitle: string;
+  trustBody: string;
+  trustPoints: string[];
+  plusTitle: string;
+  plusBody: string;
+  plusItems: string[];
   faqTitle: string;
   faqItems: FaqItem[];
   resourcesTitle: string;
@@ -68,46 +58,45 @@ const LANDING_COPY: Record<Exclude<LanguageId, "default">, LandingCopy> = {
   en: {
     introTitle: "Your Life in Weeks",
     introBody:
-      "Your Life in Weeks turns abstract time into something you can see. DotSpan visualizes each week as a dot, so long-term decisions feel clearer and easier to act on.",
-    aboutLabel: "Time in perspective",
-    aboutTitle: "See your life timeline in one clean view",
-    aboutBody:
-      "Each dot represents one week. Filled dots show time already lived, and open dots show what remains based on your date of birth and selected life expectancy.",
-    basicTitle: "Basic features",
-    basicItems: [
-      "Your Life in Weeks, months, and years views",
-      "Country-based life expectancy baseline",
-      "Localized language and number formatting",
-      "Private dashboard with Google sign-in"
+      "DotSpan turns the idea of Your Life in Weeks into a clear weekly map. Each dot is one week, so your timeline is visible at a glance and your next step is easier to choose.",
+    trustTitle: "Built for real use, not hype",
+    trustBody:
+      "DotSpan does not track your location or claim to optimize your life with hidden scoring. You set your profile, see your timeline, and decide what matters this week.",
+    trustPoints: [
+      "Simple input: country, birth date, and life expectancy baseline.",
+      "Transparent output: passed weeks, remaining weeks, and completion percent.",
+      "Private by default: account pages require login."
     ],
-    premiumTitle: "Premium features",
-    premiumItems: [
-      "Premium themes and visual styles",
-      "PDF print export for planning and reflection",
-      "Weekly reminder workflow",
-      "Public share links for social and messaging"
+    plusTitle: "Why people upgrade to Plus",
+    plusBody:
+      "Plus is for users who want a cleaner print workflow and ready-to-export outputs.",
+    plusItems: [
+      "Print-ready export (save as PDF from print view)",
+      "Ready-for-print editor (size, paper, colors, typography)",
+      "Paper presets for Letter and A4",
+      "Purchase restore from billing"
     ],
     faqTitle: "FAQ",
     faqItems: [
       {
-        question: "What is DotSpan?",
+        question: "Is DotSpan really based on Your Life in Weeks?",
         answer:
-          "DotSpan is a lifestyle app that helps you visualize Your Life in Weeks and stay accountable to the time you have."
+          "Yes. DotSpan applies the Your Life in Weeks concept in a practical format you can revisit each week."
       },
       {
-        question: "Who should use DotSpan?",
+        question: "Does DotSpan track where my time goes automatically?",
         answer:
-          "Anyone who wants simple accountability, including creators, builders, and people focused on lifestyle and wellness."
-      },
-      {
-        question: "Is my data private?",
-        answer:
-          "Yes. Private pages are protected by login. Public sharing only happens when you explicitly create a share link."
+          "No. DotSpan is not a passive tracker. It gives you a visual timeline so you can make intentional decisions."
       },
       {
         question: "What do I get with Plus?",
         answer:
-          "Plus includes premium themes, PDF print, weekly reminders, and share tools."
+          "Plus includes print-ready export, the print editor, and paper presets for print output."
+      },
+      {
+        question: "Is my data private?",
+        answer:
+          "Yes. Private pages are protected by login."
       }
     ],
     resourcesTitle: "Resources"
@@ -115,155 +104,146 @@ const LANDING_COPY: Record<Exclude<LanguageId, "default">, LandingCopy> = {
   es: {
     introTitle: "Your Life in Weeks",
     introBody:
-      "La idea es simple: si la vida se muestra en semanas, el tiempo se vuelve visible y más fácil de entender. DotSpan es nuestra versión práctica de esa perspectiva, inspirada en Tim Urban (Wait But Why).",
-    aboutLabel: "Sobre la vida",
-    aboutTitle: "DotSpan hace fácil ver Your Life in Weeks",
-    aboutBody:
-      "DotSpan es una línea de tiempo clara. Abres la app, ves dónde va tu tiempo y eliges tu siguiente paso con menos ruido.",
-    basicTitle: "Funciones básicas",
-    basicItems: [
-      "Vida en semanas, meses y años",
-      "Base de esperanza de vida por país",
-      "Idiomas y números localizados",
-      "Panel privado con Google"
+      "DotSpan convierte Your Life in Weeks en un mapa semanal claro. Cada punto es una semana y te ayuda a decidir el siguiente paso con perspectiva.",
+    trustTitle: "Hecho para uso real, sin exageración",
+    trustBody:
+      "DotSpan no rastrea tu ubicación ni usa métricas ocultas. Tú defines tus datos y ves una línea de tiempo clara para decidir mejor.",
+    trustPoints: [
+      "Entrada simple: país, fecha de nacimiento y base de esperanza de vida.",
+      "Salida transparente: semanas vividas, semanas restantes y porcentaje.",
+      "Privado por defecto: páginas de cuenta con login."
     ],
-    premiumTitle: "Funciones premium",
-    premiumItems: [
-      "Temas y estilos premium",
-      "Exportación PDF para planificar",
-      "Recordatorio semanal",
-      "Enlaces públicos para compartir"
+    plusTitle: "Por qué la gente mejora a Plus",
+    plusBody:
+      "Plus está pensado para quienes quieren un flujo de impresión claro y exportación limpia.",
+    plusItems: [
+      "Exportación lista para imprimir (guardar como PDF)",
+      "Editor para impresión (tamaño, papel, color, tipografía)",
+      "Preajustes de papel Letter y A4",
+      "Restaurar compra desde facturación"
     ],
     faqTitle: "Preguntas frecuentes",
     faqItems: [
-      {question: "¿Qué es DotSpan?", answer: "DotSpan es una app visual de perspectiva del tiempo inspirada en Your Life in Weeks."},
-      {question: "¿Para quién es?", answer: "Para personas que quieren responsabilidad simple en su vida diaria."},
-      {question: "¿Mis datos son privados?", answer: "Sí. Las páginas privadas requieren inicio de sesión."},
-      {question: "¿Qué incluye Plus?", answer: "Temas premium, PDF, recordatorios semanales y enlaces para compartir."}
+      {question: "¿Está basado en Your Life in Weeks?", answer: "Sí. DotSpan aplica ese concepto en un formato práctico para uso semanal."},
+      {question: "¿DotSpan rastrea mi tiempo automáticamente?", answer: "No. DotSpan no es un rastreador pasivo; es una vista para tomar mejores decisiones."},
+      {question: "¿Qué incluye Plus?", answer: "Exportación para impresión, editor de impresión y preajustes de papel."},
+      {question: "¿Mis datos son privados?", answer: "Sí. Las páginas privadas requieren inicio de sesión."}
     ],
     resourcesTitle: "Recursos"
   },
   fr: {
     introTitle: "Your Life in Weeks",
     introBody:
-      "L’idée est simple : si la vie est affichée en semaines, le temps devient visible et plus concret. DotSpan est notre version pratique de cette perspective, inspirée des écrits de Tim Urban (Wait But Why).",
-    aboutLabel: "À propos de la vie",
-    aboutTitle: "DotSpan rend Your Life in Weeks facile à visualiser",
-    aboutBody:
-      "DotSpan est une vue simple du temps. Vous voyez votre progression et décidez la prochaine action avec clarté.",
-    basicTitle: "Fonctionnalités de base",
-    basicItems: [
-      "Vie en semaines, mois et années",
-      "Base d’espérance de vie par pays",
-      "Langues et nombres localisés",
-      "Tableau privé avec Google"
+      "DotSpan transforme Your Life in Weeks en une vue hebdomadaire claire. Chaque point représente une semaine pour mieux décider de la suite.",
+    trustTitle: "Conçu pour un usage réel",
+    trustBody:
+      "DotSpan n’utilise pas de suivi caché. Vous renseignez vos données, puis vous obtenez une vue simple et transparente de votre timeline.",
+    trustPoints: [
+      "Entrée simple: pays, date de naissance, espérance de vie.",
+      "Sortie claire: semaines passées, semaines restantes, progression.",
+      "Privé par défaut: accès compte via authentification."
     ],
-    premiumTitle: "Fonctionnalités premium",
-    premiumItems: [
-      "Thèmes premium",
-      "Export PDF imprimable",
-      "Rappel hebdomadaire",
-      "Liens publics de partage"
+    plusTitle: "Pourquoi passer à Plus",
+    plusBody:
+      "Plus convient aux personnes qui veulent un flux d’impression propre et un export fiable.",
+    plusItems: [
+      "Export imprimable (enregistrer en PDF)",
+      "Éditeur d’impression (taille, papier, couleurs, typographie)",
+      "Préréglages papier Letter et A4",
+      "Restauration d’achat depuis la facturation"
     ],
     faqTitle: "FAQ",
     faqItems: [
-      {question: "Qu’est-ce que DotSpan ?", answer: "DotSpan est une application visuelle inspirée par l’idée Your Life in Weeks."},
-      {question: "À qui s’adresse DotSpan ?", answer: "Aux personnes qui veulent une responsabilisation simple et régulière."},
+      {question: "DotSpan suit-il automatiquement mon temps ?", answer: "Non. DotSpan n’est pas un tracker passif; c’est une vue claire pour agir avec intention."},
       {question: "Mes données sont-elles privées ?", answer: "Oui. Les pages privées sont protégées par authentification."},
-      {question: "Que comprend Plus ?", answer: "Thèmes premium, PDF, rappels hebdomadaires et partage."}
+      {question: "Que comprend Plus ?", answer: "Export imprimable, éditeur d’impression et préréglages papier."}
     ],
     resourcesTitle: "Ressources"
   },
   ja: {
     introTitle: "Your Life in Weeks",
     introBody:
-      "考え方はシンプルです。人生を週単位で可視化すると、時間を直感的に理解しやすくなります。DotSpan は Tim Urban（Wait But Why）の発想に着想を得た実用版です。",
-    aboutLabel: "人生について",
-    aboutTitle: "DotSpan で Your Life in Weeks を直感的に見える化",
-    aboutBody:
-      "DotSpan は時間の見通しをシンプルにします。今どこにいるかが分かり、次の一歩を決めやすくなります。",
-    basicTitle: "基本機能",
-    basicItems: [
-      "週・月・年の表示切替",
-      "国別の平均寿命ベース",
-      "言語と数字のローカライズ",
-      "Google サインインの非公開ダッシュボード"
+      "DotSpan は Your Life in Weeks の考え方を、毎週使える実用的な形にしたアプリです。1つのドットが1週間を表し、時間の見通しを明確にします。",
+    trustTitle: "誇張しない、実用重視",
+    trustBody:
+      "DotSpan は自動で行動を監視するツールではありません。あなたが入力した情報をもとに、週単位の見通しをわかりやすく表示します。",
+    trustPoints: [
+      "入力はシンプル: 国・生年月日・平均寿命。",
+      "出力は透明: 経過週、残り週、進捗率。",
+      "非公開ページはログイン保護。"
     ],
-    premiumTitle: "プレミアム機能",
-    premiumItems: [
-      "プレミアムテーマ",
-      "PDF印刷エクスポート",
-      "週次リマインダー",
-      "共有リンク"
+    plusTitle: "Plus にアップグレードする理由",
+    plusBody:
+      "Plus は、印刷向けの編集と出力を重視するユーザー向けです。",
+    plusItems: [
+      "印刷向けエクスポート（PDF保存）",
+      "印刷エディター（サイズ・用紙・色・文字）",
+      "Letter/A4 プリセット",
+      "課金画面から購入復元"
     ],
     faqTitle: "よくある質問",
     faqItems: [
-      {question: "DotSpan とは？", answer: "Your Life in Weeks の考え方に着想を得た、時間の可視化アプリです。"},
-      {question: "誰向けですか？", answer: "日常でやさしい自己管理をしたい人向けです。"},
+      {question: "自動で時間を計測しますか？", answer: "いいえ。DotSpan は受動トラッカーではなく、意図的な選択を助ける可視化ツールです。"},
       {question: "データは非公開ですか？", answer: "はい。非公開ページはログインで保護されます。"},
-      {question: "Plus で何が増えますか？", answer: "テーマ、PDF、週次リマインダー、共有機能です。"}
+      {question: "Plus で何が増えますか？", answer: "印刷向けエクスポート、印刷エディター、用紙プリセットです。"}
     ],
     resourcesTitle: "参考リンク"
   },
   hi: {
     introTitle: "Your Life in Weeks",
     introBody:
-      "विचार सीधा है: जब जीवन को सप्ताहों में देखते हैं, समय साफ़ दिखता है और समझना आसान होता है। DotSpan उसी दृष्टिकोण का हमारा practical रूप है, जो Tim Urban (Wait But Why) से प्रेरित है।",
-    aboutLabel: "जीवन के बारे में",
-    aboutTitle: "DotSpan के साथ Your Life in Weeks को साफ़ देखें",
-    aboutBody:
-      "DotSpan समय को आसान बनाता है। आप तुरंत देख सकते हैं कि आप कहाँ हैं और अगला कदम क्या होना चाहिए।",
-    basicTitle: "बेसिक फीचर्स",
-    basicItems: [
-      "सप्ताह, महीने और वर्ष व्यू",
-      "देश के आधार पर आयु अनुमान",
-      "लोकल भाषा और नंबर सपोर्ट",
-      "Google लॉगिन के साथ प्राइवेट डैशबोर्ड"
+      "DotSpan, Your Life in Weeks को practical तरीके से दिखाता है। हर डॉट एक सप्ताह है, ताकि समय साफ़ दिखे और अगला कदम चुनना आसान हो।",
+    trustTitle: "सच्चा और स्पष्ट अनुभव",
+    trustBody:
+      "DotSpan कोई hidden tracker नहीं है। आप अपना डेटा भरते हैं और ऐप आपको साफ़ weekly perspective देता है।",
+    trustPoints: [
+      "Simple input: देश, जन्म तिथि, life expectancy baseline.",
+      "Transparent output: बीते सप्ताह, बाकी सप्ताह, प्रगति प्रतिशत.",
+      "Private pages login से सुरक्षित।"
     ],
-    premiumTitle: "प्रीमियम फीचर्स",
-    premiumItems: [
-      "प्रीमियम थीम",
-      "PDF प्रिंट एक्सपोर्ट",
-      "साप्ताहिक रिमाइंडर",
-      "पब्लिक शेयर लिंक"
+    plusTitle: "लोग Plus क्यों लेते हैं",
+    plusBody:
+      "Plus उन users के लिए है जो clean print workflow और export output चाहते हैं।",
+    plusItems: [
+      "Print-ready export (print view से PDF)",
+      "Print editor (size, paper, background, font)",
+      "Letter और A4 paper presets",
+      "Billing से purchase restore"
     ],
     faqTitle: "सामान्य प्रश्न",
     faqItems: [
-      {question: "DotSpan क्या है?", answer: "यह Your Life in Weeks विचार से प्रेरित समय-दृष्टि ऐप है।"},
-      {question: "किसके लिए है?", answer: "उन लोगों के लिए जो आसान accountability चाहते हैं।"},
+      {question: "क्या DotSpan समय खुद track करता है?", answer: "नहीं। यह passive tracker नहीं है; यह decision clarity के लिए visual timeline है।"},
       {question: "क्या डेटा प्राइवेट है?", answer: "हाँ, प्राइवेट पेज लॉगिन से सुरक्षित हैं।"},
-      {question: "Plus में क्या मिलता है?", answer: "प्रीमियम थीम, PDF, साप्ताहिक रिमाइंडर और शेयर टूल।"}
+      {question: "Plus में क्या मिलता है?", answer: "Print-ready export, print editor और paper presets।"}
     ],
     resourcesTitle: "संसाधन"
   },
   bn: {
     introTitle: "Your Life in Weeks",
     introBody:
-      "ধারণাটি সহজ: জীবনকে সপ্তাহে দেখালে সময় চোখে দেখা যায় এবং বোঝা সহজ হয়। DotSpan হলো সেই দৃষ্টিভঙ্গির আমাদের ব্যবহারযোগ্য সংস্করণ, Tim Urban (Wait But Why) থেকে অনুপ্রাণিত।",
-    aboutLabel: "জীবন সম্পর্কে",
-    aboutTitle: "DotSpan দিয়ে Your Life in Weeks সহজে দেখুন",
-    aboutBody:
-      "DotSpan সময়কে পরিষ্কারভাবে দেখায়। আপনি কোথায় আছেন বুঝে পরের পদক্ষেপ ঠিক করতে পারেন।",
-    basicTitle: "বেসিক ফিচার",
-    basicItems: [
-      "সপ্তাহ, মাস ও বছর ভিউ",
-      "দেশভিত্তিক আয়ু অনুমান",
-      "লোকাল ভাষা ও নাম্বার সাপোর্ট",
-      "Google লগইনসহ প্রাইভেট ড্যাশবোর্ড"
+      "DotSpan, Your Life in Weeks ধারণাকে বাস্তবভাবে ব্যবহারযোগ্য করে। প্রতিটি ডট একটি সপ্তাহ, তাই সময় দেখা ও সিদ্ধান্ত নেওয়া সহজ হয়।",
+    trustTitle: "বাস্তব ব্যবহার, বাড়াবাড়ি নয়",
+    trustBody:
+      "DotSpan আপনার সময় গোপনে ট্র্যাক করে না। আপনি তথ্য দেন, অ্যাপ পরিষ্কারভাবে সাপ্তাহিক টাইমলাইন দেখায়।",
+    trustPoints: [
+      "সহজ ইনপুট: দেশ, জন্মতারিখ, আয়ু baseline।",
+      "স্বচ্ছ আউটপুট: কেটে যাওয়া সপ্তাহ, বাকি সপ্তাহ, অগ্রগতি।",
+      "প্রাইভেট পেজ লগইন-প্রটেক্টেড।"
     ],
-    premiumTitle: "প্রিমিয়াম ফিচার",
-    premiumItems: [
-      "প্রিমিয়াম থিম",
-      "PDF প্রিন্ট এক্সপোর্ট",
-      "সাপ্তাহিক রিমাইন্ডার",
-      "পাবলিক শেয়ার লিংক"
+    plusTitle: "কেন Plus নেন ব্যবহারকারীরা",
+    plusBody:
+      "Plus তাদের জন্য, যারা পরিষ্কার print workflow এবং ভালো export চান।",
+    plusItems: [
+      "Print-ready export (print view থেকে PDF)",
+      "Print editor (size, paper, background, font)",
+      "Letter ও A4 paper presets",
+      "Billing থেকে purchase restore"
     ],
     faqTitle: "FAQ",
     faqItems: [
-      {question: "DotSpan কী?", answer: "Your Life in Weeks ধারণা থেকে তৈরি একটি টাইম পার্সপেক্টিভ অ্যাপ।"},
-      {question: "কারা ব্যবহার করবে?", answer: "যারা সহজ accountability চান তাদের জন্য।"},
+      {question: "DotSpan কি সময় নিজে ট্র্যাক করে?", answer: "না। এটি passive tracker নয়; সিদ্ধান্তের জন্য visual timeline টুল।"},
       {question: "ডাটা কি প্রাইভেট?", answer: "হ্যাঁ, প্রাইভেট পেজ লগইন দিয়ে সুরক্ষিত।"},
-      {question: "Plus তে কী আছে?", answer: "প্রিমিয়াম থিম, PDF, সাপ্তাহিক রিমাইন্ডার ও শেয়ার টুল।"}
+      {question: "Plus তে কী আছে?", answer: "Print-ready export, print editor ও paper presets।"}
     ],
     resourcesTitle: "রিসোর্স"
   }
@@ -299,9 +279,7 @@ export default function MainPage() {
     lifeExpectancy,
     hasCustomExpectancy,
     dotStyle,
-    themeId,
-    language,
-    viewMode
+    language
   } = profileState;
   const {
     name: draftName,
@@ -309,9 +287,7 @@ export default function MainPage() {
     dob: draftDob,
     lifeExpectancy: draftLifeExpectancy,
     hasCustomExpectancy: draftHasCustomExpectancy,
-    dotStyle: draftDotStyle,
-    themeId: draftThemeId,
-    viewMode: draftViewMode
+    dotStyle: draftDotStyle
   } = draft;
 
   const navigatorLanguage = typeof navigator !== "undefined" ? navigator.language : "en";
@@ -333,19 +309,7 @@ export default function MainPage() {
   );
   const languageOptions = useMemo(() => buildLanguageOptions(strings), [strings]);
   const dotStyleOptions = useMemo(() => buildDotStyleOptions(strings), [strings]);
-  const viewModeOptions = useMemo(() => buildViewModeOptions(strings), [strings]);
-  const availableThemes = useMemo(
-    () =>
-      ["aurora", "sunset", "classic"]
-        .map((id) => THEMES.find((theme) => theme.id === id))
-        .filter((theme): theme is (typeof THEMES)[number] => Boolean(theme)),
-    []
-  );
-  const themeOptions = useMemo(
-    () => buildThemeOptions(availableThemes),
-    [availableThemes]
-  );
-  const activeTheme = useMemo(() => getTheme(themeId), [themeId]);
+  const activeTheme = useMemo(() => getTheme(), []);
 
   const countryOptions = useMemo<CountryOption[]>(() => {
     const formatter = new Intl.DisplayNames([resolvedLocale], {type: "region"});
@@ -376,12 +340,6 @@ export default function MainPage() {
   }, [activeTheme]);
 
   useEffect(() => {
-    if (!BASIC_THEME_IDS.includes(themeId)) {
-      updateProfile({themeId: DEFAULT_THEME_ID});
-    }
-  }, [themeId, updateProfile]);
-
-  useEffect(() => {
     if (!hasHydrated) return;
     if (!userId) return;
     if (!profileLoaded) return;
@@ -399,15 +357,16 @@ export default function MainPage() {
     lifeExpectancy,
     hasCustomExpectancy,
     dotStyle,
-    themeId,
-    language,
-    viewMode
+    language
   ]);
 
   useEffect(() => {
     if (!hasHydrated) return;
     if (searchParams?.get("settings") === "1") {
       setIsModalOpen(true);
+    }
+    if (searchParams?.get("upgrade") === "1") {
+      setIsUpgradeModalOpen(true);
     }
   }, [hasHydrated, searchParams]);
 
@@ -446,19 +405,14 @@ export default function MainPage() {
       dob: DEFAULT_PROFILE_STATE.dob,
       lifeExpectancy: DEFAULT_PROFILE_STATE.lifeExpectancy,
       hasCustomExpectancy: DEFAULT_PROFILE_STATE.hasCustomExpectancy,
-      dotStyle: DEFAULT_PROFILE_STATE.dotStyle,
-      themeId: DEFAULT_PROFILE_STATE.themeId,
-      viewMode: DEFAULT_PROFILE_STATE.viewMode
+      dotStyle: DEFAULT_PROFILE_STATE.dotStyle
     }));
   };
 
   const expectancy = clamp(lifeExpectancy, 1, 120);
-  const viewState = useMemo(
-    () => getViewState(viewMode, dob, expectancy),
-    [dob, expectancy, viewMode]
-  );
+  const viewState = useMemo(() => getViewState("weeks", dob, expectancy), [dob, expectancy]);
   const gridRows = Math.max(1, Math.ceil(viewState.totalUnits / viewState.perRow));
-  const isMonthView = viewMode === "months";
+  const isMonthView = false;
   const gridMetrics = useDotMetrics(
     gridContainerRef,
     viewState.perRow,
@@ -468,10 +422,10 @@ export default function MainPage() {
     viewState.maxDotSize,
     viewState.gapRatio
   );
-  const viewTitle = getViewTitle(strings, viewMode);
+  const viewTitle = getViewTitle(strings, "weeks");
   const columnStep = viewState.columnStep;
   const rowStep = viewState.rowStep;
-  const isCompactView = viewMode !== "weeks";
+  const isCompactView = false;
 
   const handleDraftCountryChange = (value: string) => {
     updateDraft({country: value, hasCustomExpectancy: false});
@@ -505,9 +459,8 @@ export default function MainPage() {
         lifeExpectancy,
         hasCustomExpectancy,
         dotStyle,
-        themeId,
         language,
-        viewMode
+        viewMode: "weeks"
       }
     };
     await supabaseClient.from("profiles").upsert(payload, {onConflict: "id"});
@@ -521,13 +474,7 @@ export default function MainPage() {
     await signOut();
   };
 
-  const progressLabel = formatProgress(
-    strings,
-    viewMode,
-    viewState.unitsPassed,
-    viewState.totalUnits,
-    resolvedLocale
-  );
+  const progressLabel = formatProgress(strings, "weeks", viewState.unitsPassed, viewState.totalUnits, resolvedLocale);
   const percentLabel = formatLocalePercent(viewState.percent, resolvedLocale);
 
   const faqItems = useMemo(
@@ -566,7 +513,6 @@ export default function MainPage() {
             isSignedIn={Boolean(userId)}
             hasAccess={hasAccess}
             authEmail={authEmail}
-            themeId={themeId}
             strings={strings}
           />
 
@@ -638,17 +584,17 @@ export default function MainPage() {
             </section>
 
             <section>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-subtle">{landingCopy.aboutLabel}</p>
               <h2 className="mt-3 text-2xl font-semibold text-main sm:text-3xl">
-                {landingCopy.aboutTitle}
+                {landingCopy.trustTitle}
               </h2>
               <p className="mt-4 text-base leading-8 text-muted">
-                {landingCopy.aboutBody}
+                {landingCopy.trustBody}
               </p>
-              <p className="mt-3 text-base leading-8 text-muted">
-                DotSpan is inspired by Tim Urban&rsquo;s <strong className="text-main">Your Life in Weeks</strong>,
-                with a minimal interface designed for focus, reflection, and better planning.
-              </p>
+              <ul className="mt-4 space-y-2 text-base leading-8 text-muted">
+                {landingCopy.trustPoints.map((point) => (
+                  <li key={point}>• {point}</li>
+                ))}
+              </ul>
             </section>
 
             <section>
@@ -667,23 +613,13 @@ export default function MainPage() {
 
             <section>
               <h2 className="text-2xl font-semibold text-main sm:text-3xl">
-                A simple weekly reset
+                {landingCopy.plusTitle}
               </h2>
-              <ul className="mt-4 space-y-2 text-base leading-8 text-muted">
-                <li>Look at your timeline for 60 seconds before planning your week.</li>
-                <li>Choose one meaningful action for health, work, and relationships.</li>
-                <li>Close the week with a short reflection on what actually mattered.</li>
-              </ul>
-            </section>
-
-            <section>
-              <h2 className="text-2xl font-semibold text-main sm:text-3xl">
-                Weekly reflection prompts
-              </h2>
-              <ul className="mt-4 space-y-2 text-base leading-8 text-muted">
-                <li>What am I postponing that would improve my life if done this week?</li>
-                <li>Where am I spending time by default instead of by intention?</li>
-                <li>What is one small change that future me will thank me for?</li>
+              <p className="mt-4 text-base leading-8 text-muted">{landingCopy.plusBody}</p>
+              <ul className="mt-3 space-y-2 text-base leading-8 text-muted">
+                {landingCopy.plusItems.map((item) => (
+                  <li key={item}>• {item}</li>
+                ))}
               </ul>
             </section>
 
@@ -755,15 +691,9 @@ export default function MainPage() {
         onDraftLifeExpectancyChange={handleDraftLifeExpectancyChange}
         draftDotStyle={draftDotStyle}
         onDraftDotStyleChange={(value) => updateDraft({dotStyle: value})}
-        draftThemeId={draftThemeId}
-        onDraftThemeChange={(value) => updateDraft({themeId: value})}
-        viewMode={draftViewMode}
-        onViewModeChange={(value) => updateDraft({viewMode: value})}
         locale={resolvedLocale}
         countryOptions={countryOptions}
         dotStyleOptions={dotStyleOptions}
-        themeOptions={themeOptions}
-        viewModeOptions={viewModeOptions}
         strings={strings}
       />
     </main>

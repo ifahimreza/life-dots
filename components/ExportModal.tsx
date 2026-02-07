@@ -222,7 +222,7 @@ export default function ExportModal({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-[1140px] rounded-3xl border border-surface bg-white p-4 shadow-[0_24px_80px_rgba(15,23,42,0.22)] sm:p-6"
+        className="flex max-h-[92vh] w-full max-w-[1060px] flex-col overflow-hidden rounded-3xl border border-surface bg-white p-4 shadow-[0_24px_80px_rgba(15,23,42,0.22)] sm:p-6"
         onClick={(event) => event.stopPropagation()}
       >
         <div className="flex flex-wrap items-start justify-between gap-3">
@@ -275,8 +275,8 @@ export default function ExportModal({
           </button>
         </div>
 
-        <div className="mt-5 grid gap-4 lg:grid-cols-[300px_minmax(0,1fr)]">
-          <aside className="space-y-4 rounded-2xl border border-surface bg-[#fafafa] p-4">
+        <div className="mt-5 grid min-h-0 flex-1 items-start gap-4 lg:grid-cols-[300px_minmax(0,1fr)]">
+          <aside className="self-start space-y-4 rounded-2xl border border-surface bg-[#fafafa] p-4">
             <div>
               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-subtle">
                 Download
@@ -432,7 +432,7 @@ export default function ExportModal({
             {error ? <p className="text-xs text-rose-700">{error}</p> : null}
           </aside>
 
-          <div className="rounded-2xl border border-surface bg-[#f7f8fa] p-4 sm:p-5">
+          <div className="min-h-0 rounded-2xl border border-surface bg-[#f7f8fa] p-4 sm:p-5">
             <div className="mb-2 flex items-center justify-between gap-3">
               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-subtle">
                 Preview
@@ -441,24 +441,22 @@ export default function ExportModal({
                 Auto refreshed
               </span>
             </div>
-            <div className="relative min-h-[380px] overflow-hidden rounded-xl border border-neutral-200 bg-white sm:min-h-[500px]">
+            <div className="relative h-[52vh] min-h-[320px] max-h-[620px] overflow-hidden rounded-xl border border-neutral-200 bg-white">
               {isGenerating ? (
-                <div className="flex min-h-[380px] items-center justify-center sm:min-h-[500px]">
+                <div className="flex h-full items-center justify-center">
                   <p className="text-sm text-muted">Generating preview...</p>
                 </div>
               ) : previewUrl ? (
-                <div className="flex min-h-[380px] items-center justify-center p-6 sm:min-h-[500px]">
-                  <div className="w-full max-w-[700px] rounded-lg bg-white shadow-[0_12px_30px_rgba(15,23,42,0.16)] ring-1 ring-neutral-200">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={previewUrl}
-                      alt="Export preview"
-                      className="h-auto w-full rounded-lg object-contain"
-                    />
-                  </div>
+                <div className="flex h-full items-center justify-center p-4 sm:p-6">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={previewUrl}
+                    alt="Export preview"
+                    className="max-h-full max-w-full rounded-lg object-contain shadow-[0_12px_30px_rgba(15,23,42,0.16)] ring-1 ring-neutral-200"
+                  />
                 </div>
               ) : (
-                <div className="flex min-h-[380px] items-center justify-center sm:min-h-[500px]">
+                <div className="flex h-full items-center justify-center">
                   <p className="text-sm text-muted">Preview unavailable.</p>
                 </div>
               )}

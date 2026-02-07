@@ -30,9 +30,6 @@ export type UiStrings = {
   downloadPng: string;
   downloadJpg: string;
   downloadPdf: string;
-  themeLabel: string;
-  themeLockedTitle: string;
-  themeLockedCta: string;
   accountLabel: string;
   accountSignedIn: string;
   accountPrompt: string;
@@ -87,9 +84,6 @@ const TRANSLATIONS: Record<Exclude<LanguageId, "default">, UiStrings> = {
     downloadPng: "Download PNG",
     downloadJpg: "Download JPG",
     downloadPdf: "Print PDF",
-    themeLabel: "Theme",
-    themeLockedTitle: "More themes are in Plus.",
-    themeLockedCta: "Upgrade to unlock the theme pack.",
     accountLabel: "Account",
     accountSignedIn: "Signed in",
     accountPrompt: "Sign in to sync your profile and unlock Plus.",
@@ -142,9 +136,6 @@ const TRANSLATIONS: Record<Exclude<LanguageId, "default">, UiStrings> = {
     downloadPng: "Descargar PNG",
     downloadJpg: "Descargar JPG",
     downloadPdf: "Imprimir PDF",
-    themeLabel: "Tema",
-    themeLockedTitle: "Hay más temas en Plus.",
-    themeLockedCta: "Actualiza para desbloquear el paquete de temas.",
     accountLabel: "Cuenta",
     accountSignedIn: "Sesión iniciada",
     accountPrompt: "Inicia sesión para sincronizar tu perfil y desbloquear Plus.",
@@ -197,9 +188,6 @@ const TRANSLATIONS: Record<Exclude<LanguageId, "default">, UiStrings> = {
     downloadPng: "Télécharger PNG",
     downloadJpg: "Télécharger JPG",
     downloadPdf: "Imprimer PDF",
-    themeLabel: "Thème",
-    themeLockedTitle: "Plus de thèmes sont dans Plus.",
-    themeLockedCta: "Passez à Plus pour débloquer les thèmes.",
     accountLabel: "Compte",
     accountSignedIn: "Connecté",
     accountPrompt: "Connectez-vous pour synchroniser votre profil et débloquer Plus.",
@@ -252,9 +240,6 @@ const TRANSLATIONS: Record<Exclude<LanguageId, "default">, UiStrings> = {
     downloadPng: "PNGをダウンロード",
     downloadJpg: "JPGをダウンロード",
     downloadPdf: "PDFを印刷",
-    themeLabel: "テーマ",
-    themeLockedTitle: "追加テーマはPlusで利用できます。",
-    themeLockedCta: "アップグレードしてテーマを利用できます。",
     accountLabel: "アカウント",
     accountSignedIn: "サインイン済み",
     accountPrompt: "サインインしてプロフィール同期とPlusを解除。",
@@ -307,9 +292,6 @@ const TRANSLATIONS: Record<Exclude<LanguageId, "default">, UiStrings> = {
     downloadPng: "PNG डाउनलोड करें",
     downloadJpg: "JPG डाउनलोड करें",
     downloadPdf: "PDF प्रिंट करें",
-    themeLabel: "थीम",
-    themeLockedTitle: "अधिक थीम Plus में उपलब्ध हैं।",
-    themeLockedCta: "थीम पैक अनलॉक करने के लिए अपग्रेड करें।",
     accountLabel: "खाता",
     accountSignedIn: "साइन इन",
     accountPrompt: "प्रोफ़ाइल सिंक और Plus अनलॉक करने के लिए साइन इन करें।",
@@ -362,9 +344,6 @@ const TRANSLATIONS: Record<Exclude<LanguageId, "default">, UiStrings> = {
     downloadPng: "PNG ডাউনলোড করুন",
     downloadJpg: "JPG ডাউনলোড করুন",
     downloadPdf: "PDF প্রিন্ট করুন",
-    themeLabel: "থিম",
-    themeLockedTitle: "আরও থিম Plus-তে আছে।",
-    themeLockedCta: "থিম প্যাক আনলক করতে আপগ্রেড করুন।",
     accountLabel: "অ্যাকাউন্ট",
     accountSignedIn: "সাইন ইন",
     accountPrompt: "প্রোফাইল সিঙ্ক ও Plus আনলক করতে সাইন ইন করুন।",

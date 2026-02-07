@@ -8,7 +8,6 @@ import AppFooter from "../../components/AppFooter";
 import LogoMark from "../../components/LogoMark";
 import {LanguageId, Profile, STORAGE_KEY} from "../../libs/lifeDotsData";
 import {UiStrings, getTranslations, resolveLocale} from "../../libs/i18n";
-import {DEFAULT_THEME_ID} from "../../libs/themes";
 import {hasCompletedOnboarding, loadStoredProfile} from "../../libs/profile";
 import {useSupabaseAuth} from "../../libs/useSupabaseAuth";
 import {countryCodes, lifeExpectancyByCountry} from "../../data/countries";
@@ -155,9 +154,8 @@ export default function OnboardingPage() {
       lifeExpectancy: nextLifeExpectancy,
       hasCustomExpectancy: storedHasCustom,
       dotStyle: storedProfile?.dotStyle ?? "classic",
-      themeId: storedProfile?.themeId ?? DEFAULT_THEME_ID,
       language: (storedProfile?.language ?? "default") as LanguageId,
-      viewMode: storedProfile?.viewMode ?? "weeks"
+      viewMode: "weeks"
     };
 
     if (typeof window !== "undefined") {

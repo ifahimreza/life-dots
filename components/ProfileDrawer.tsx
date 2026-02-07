@@ -7,11 +7,8 @@ import {useEffect, useMemo, useState} from "react";
 import {
   CountryOption,
   DotStyle,
-  SelectOption,
-  ViewMode
+  SelectOption
 } from "../libs/lifeDotsData";
-import {DEFAULT_THEME_ID} from "../libs/themes";
-import type {ThemeId} from "../libs/themes";
 import {formatLifeExpectancy, type UiStrings} from "../libs/i18n";
 import {getMenuSoundMode, setMenuSoundMode, type MenuSoundMode} from "../libs/hoverSound";
 
@@ -36,15 +33,9 @@ type ProfileDrawerProps = {
   onDraftLifeExpectancyChange: (value: number) => void;
   draftDotStyle: DotStyle;
   onDraftDotStyleChange: (value: DotStyle) => void;
-  draftThemeId: ThemeId;
-  onDraftThemeChange: (value: ThemeId) => void;
-  viewMode: ViewMode;
-  onViewModeChange: (value: ViewMode) => void;
   locale: string;
   countryOptions: CountryOption[];
   dotStyleOptions: SelectOption[];
-  themeOptions: SelectOption[];
-  viewModeOptions: SelectOption[];
   strings: UiStrings;
 };
 
@@ -69,15 +60,9 @@ export default function ProfileDrawer({
   onDraftLifeExpectancyChange,
   draftDotStyle,
   onDraftDotStyleChange,
-  draftThemeId,
-  onDraftThemeChange,
-  viewMode,
-  onViewModeChange,
   locale,
   countryOptions,
   dotStyleOptions,
-  themeOptions,
-  viewModeOptions,
   strings
 }: ProfileDrawerProps) {
   const selectedCountry = countryOptions.find((option) => option.id === draftCountry);
@@ -347,74 +332,6 @@ export default function ProfileDrawer({
                 size="compact"
                 onChange={(params) =>
                   onDraftDotStyleChange((params.value[0]?.id as DotStyle) ?? "classic")
-                }
-                overrides={{
-                  ControlContainer: {
-                    style: {
-                      minHeight: "40px",
-                      borderTopLeftRadius: "14px",
-                      borderTopRightRadius: "14px",
-                      borderBottomLeftRadius: "14px",
-                      borderBottomRightRadius: "14px",
-                      backgroundColor: "transparent",
-                      borderColor: "rgba(15, 23, 42, 0.12)",
-                      boxShadow: "none"
-                    }
-                  },
-                  Input: {style: {fontSize: "13px"}},
-                  Placeholder: {style: {fontSize: "13px", color: "#94a3b8"}},
-                  SingleValue: {style: {fontSize: "13px"}},
-                  ValueContainer: {style: {paddingLeft: "12px", paddingRight: "12px"}},
-                  IconsContainer: {style: {paddingRight: "8px"}}
-                }}
-              />
-            </div>
-            <div className="space-y-1.5">
-              <label className="text-[11px] font-semibold uppercase tracking-wide text-muted">
-                {strings.themeLabel}
-              </label>
-              <Select
-                options={themeOptions}
-                value={themeOptions.filter((option) => option.id === draftThemeId)}
-                placeholder={strings.themeLabel}
-                clearable={false}
-                size="compact"
-                onChange={(params) =>
-                  onDraftThemeChange((params.value[0]?.id as ThemeId) ?? DEFAULT_THEME_ID)
-                }
-                overrides={{
-                  ControlContainer: {
-                    style: {
-                      minHeight: "40px",
-                      borderTopLeftRadius: "14px",
-                      borderTopRightRadius: "14px",
-                      borderBottomLeftRadius: "14px",
-                      borderBottomRightRadius: "14px",
-                      backgroundColor: "transparent",
-                      borderColor: "rgba(15, 23, 42, 0.12)",
-                      boxShadow: "none"
-                    }
-                  },
-                  Input: {style: {fontSize: "13px"}},
-                  Placeholder: {style: {fontSize: "13px", color: "#94a3b8"}},
-                  SingleValue: {style: {fontSize: "13px"}},
-                  ValueContainer: {style: {paddingLeft: "12px", paddingRight: "12px"}},
-                  IconsContainer: {style: {paddingRight: "8px"}}
-                }}
-              />
-            </div>
-            <div className="space-y-1.5">
-              <label className="text-[11px] font-semibold uppercase tracking-wide text-muted">
-                {strings.viewModeLabel}
-              </label>
-              <Select
-                options={viewModeOptions}
-                value={viewModeOptions.filter((option) => option.id === viewMode)}
-                placeholder={strings.viewModeLabel}
-                clearable={false}
-                size="compact"
-                onChange={(params) =>
-                  onViewModeChange((params.value[0]?.id as ViewMode) ?? "weeks")
                 }
                 overrides={{
                   ControlContainer: {

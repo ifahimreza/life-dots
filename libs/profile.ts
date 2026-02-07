@@ -6,7 +6,6 @@ import {
   LEGACY_STORAGE_KEYS,
   STORAGE_KEY
 } from "./lifeDotsData";
-import {DEFAULT_THEME_ID, ThemeId} from "./themes";
 import {lifeExpectancyByCountry} from "../data/countries";
 
 export type ProfileState = {
@@ -18,7 +17,6 @@ export type ProfileState = {
   lifeExpectancy: number;
   hasCustomExpectancy: boolean;
   dotStyle: DotStyle;
-  themeId: ThemeId;
   language: LanguageId;
   viewMode: ViewMode;
 };
@@ -32,7 +30,6 @@ export const DEFAULT_PROFILE_STATE: ProfileState = {
   lifeExpectancy: 80,
   hasCustomExpectancy: false,
   dotStyle: "classic",
-  themeId: DEFAULT_THEME_ID,
   language: "default",
   viewMode: "weeks"
 };
@@ -65,7 +62,6 @@ export function toProfileState(profile: Profile | null): ProfileState {
   const nextProfile: Profile = profile ?? ({} as Profile);
   const storedCountry = nextProfile.country || "";
   const storedLanguage = (nextProfile.language ?? "default") as LanguageId;
-  const storedViewMode = (nextProfile.viewMode ?? "weeks") as ViewMode;
   const storedExpectancy =
     typeof nextProfile.lifeExpectancy === "number" ? nextProfile.lifeExpectancy : undefined;
   const defaultExpectancy = storedCountry
@@ -89,9 +85,8 @@ export function toProfileState(profile: Profile | null): ProfileState {
     lifeExpectancy: storedExpectancy ?? defaultExpectancy,
     hasCustomExpectancy: nextHasCustom,
     dotStyle: nextProfile.dotStyle ?? "classic",
-    themeId: (nextProfile.themeId as ThemeId) ?? DEFAULT_THEME_ID,
     language: storedLanguage,
-    viewMode: storedViewMode
+    viewMode: "weeks"
   };
 }
 
@@ -105,9 +100,8 @@ export function toStoredProfile(state: ProfileState): Profile {
     lifeExpectancy: state.lifeExpectancy,
     hasCustomExpectancy: state.hasCustomExpectancy,
     dotStyle: state.dotStyle,
-    themeId: state.themeId,
     language: state.language,
-    viewMode: state.viewMode
+    viewMode: "weeks"
   };
 }
 

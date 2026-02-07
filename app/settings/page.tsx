@@ -282,7 +282,7 @@ export default function SettingsPage() {
                       Sign out
                     </button>
                     <Link
-                      href="/plus"
+                      href="/?upgrade=1"
                       className="rounded-full bg-neutral-900 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-white"
                     >
                       Go Plus
