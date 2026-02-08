@@ -265,6 +265,7 @@ export default function MainPage() {
     profile: remoteProfile,
     isLoading: isAuthLoading,
     profileLoaded,
+    refreshProfile,
     signInWithGoogle,
     signOut
   } = useSupabaseAuth({redirectPath: "/", fetchProfile: true});
@@ -569,6 +570,10 @@ export default function MainPage() {
         name={name}
         hasAccess={hasAccess}
         onSignIn={handleSignIn}
+        onAccessSynced={async () => {
+          if (!userId) return;
+          await refreshProfile(userId);
+        }}
       />
 
       <section className="w-full bg-white py-12 sm:py-16">

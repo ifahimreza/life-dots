@@ -16,6 +16,7 @@ type UpgradeModalProps = {
   name?: string;
   hasAccess: boolean;
   onSignIn: () => Promise<void>;
+  onAccessSynced?: () => Promise<void> | void;
 };
 
 const featureItems = [
@@ -53,7 +54,8 @@ export default function UpgradeModal({
   email,
   name,
   hasAccess,
-  onSignIn
+  onSignIn,
+  onAccessSynced
 }: UpgradeModalProps) {
   const router = useRouter();
   const [selectedPlan, setSelectedPlan] = useState<PlanId>("lifetime");
@@ -90,6 +92,23 @@ export default function UpgradeModal({
       const token = sessionData.session?.access_token;
       if (!token) {
         throw new Error("Please sign in again.");
+      }
+
+      const syncResponse = await fetch("/api/freemius/sync-access", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      const syncData = (await syncResponse.json().catch(() => null)) as
+        | {hasAccess?: boolean; error?: string}
+        | null;
+
+      if (syncResponse.ok && syncData?.hasAccess) {
+        await onAccessSynced?.();
+        onClose();
+        router.push("/settings?tab=billing");
+        return;
       }
 
       const response = await fetch("/api/freemius/checkout", {
