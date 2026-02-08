@@ -1,10 +1,10 @@
 import {Freemius, type CheckoutBuilderUserOptions} from "@freemius/sdk";
 import config from "../config.server";
 
-type PlanKey = "yearly" | "lifetime";
+type PricingKey = "monthly" | "yearly" | "lifetime";
 
 type CheckoutInput = {
-  plan?: PlanKey;
+  pricing?: PricingKey;
   email?: string;
   name?: string;
 };
@@ -19,8 +19,10 @@ export function getMissingFreemiusConfigKeys(): string[] {
   if (!freemius?.apiKey) missing.push("FREEMIUS_API_KEY");
   if (!freemius?.secretKey) missing.push("FREEMIUS_SECRET_KEY");
   if (!freemius?.publicKey) missing.push("FREEMIUS_PUBLIC_KEY");
-  if (!freemius?.plans?.yearly?.planId) missing.push("FREEMIUS_PLAN_ID_YEARLY");
-  if (!freemius?.plans?.lifetime?.planId) missing.push("FREEMIUS_PLAN_ID_LIFETIME");
+  if (!freemius?.plan?.planId) missing.push("FREEMIUS_PLAN_ID");
+  if (!freemius?.pricing?.monthly?.pricingId) missing.push("FREEMIUS_PRICING_ID_MONTHLY");
+  if (!freemius?.pricing?.yearly?.pricingId) missing.push("FREEMIUS_PRICING_ID_YEARLY");
+  if (!freemius?.pricing?.lifetime?.pricingId) missing.push("FREEMIUS_PRICING_ID_LIFETIME");
 
   return missing;
 }
@@ -44,13 +46,18 @@ export function getFreemiusClient() {
   return freemiusClient;
 }
 
-function resolvePlanId(plan?: PlanKey): string | null {
-  if (plan && config.freemius?.plans?.[plan]?.planId) {
-    return String(config.freemius.plans[plan].planId);
+function resolvePlanId(): string | null {
+  const planId = config.freemius?.plan?.planId;
+  return planId ? String(planId) : null;
+}
+
+function resolvePricingId(pricing?: PricingKey): string | null {
+  if (pricing && config.freemius?.pricing?.[pricing]?.pricingId) {
+    return String(config.freemius.pricing[pricing].pricingId);
   }
 
-  const plans = Object.values(config.freemius?.plans ?? {});
-  const fallback = plans.find((entry) => entry?.planId)?.planId;
+  const pricingOptions = Object.values(config.freemius?.pricing ?? {});
+  const fallback = pricingOptions.find((entry) => entry?.pricingId)?.pricingId;
   return fallback ? String(fallback) : null;
 }
 
@@ -62,17 +69,22 @@ function buildCheckoutUser(email?: string, name?: string): CheckoutBuilderUserOp
 
 export async function createCheckoutLink(input: CheckoutInput) {
   const freemius = getFreemiusClient();
-  const planId = resolvePlanId(input.plan);
+  const planId = resolvePlanId();
+  const pricingId = resolvePricingId(input.pricing);
 
   if (!planId) {
     throw new Error("Missing Freemius plan id.");
   }
+  if (!pricingId) {
+    throw new Error("Missing Freemius pricing id.");
+  }
 
   const checkout = await freemius.checkout.create({
-    planId,
     isSandbox: Boolean(config.freemius?.isSandbox),
     user: buildCheckoutUser(input.email, input.name)
   });
+  checkout.setPlan(planId);
+  checkout.setPricing(pricingId);
 
   return checkout.getLink();
 }

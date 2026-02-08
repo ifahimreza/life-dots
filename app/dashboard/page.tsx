@@ -131,7 +131,7 @@ export default function DashboardPage() {
         throw new Error(payload?.error || "Could not delete account.");
       }
       await signOut();
-      router.replace("/login");
+      router.replace("/");
     } catch (error) {
       const message = error instanceof Error ? error.message : "Could not delete account.";
       setDeleteMessage(message);

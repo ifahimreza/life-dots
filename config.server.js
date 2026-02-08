@@ -26,16 +26,25 @@ const serverConfig = {
 		secretKey: process.env.FREEMIUS_SECRET_KEY ?? '',
 		publicKey: process.env.FREEMIUS_PUBLIC_KEY ?? '',
 		isSandbox: process.env.FREEMIUS_SANDBOX === 'true',
-		plans: {
+		plan: {
+			...(config.freemius?.plan ?? {}),
+			planId: process.env.FREEMIUS_PLAN_ID ?? '',
+		},
+		pricing: {
+			monthly: {
+				...(config.freemius?.pricing?.monthly ?? {}),
+				id: 'monthly',
+				pricingId: process.env.FREEMIUS_PRICING_ID_MONTHLY ?? '',
+			},
 			yearly: {
-				...(config.freemius?.plans?.yearly ?? {}),
+				...(config.freemius?.pricing?.yearly ?? {}),
 				id: 'yearly',
-				planId: process.env.FREEMIUS_PLAN_ID_YEARLY ?? '',
+				pricingId: process.env.FREEMIUS_PRICING_ID_YEARLY ?? '',
 			},
 			lifetime: {
-				...(config.freemius?.plans?.lifetime ?? {}),
+				...(config.freemius?.pricing?.lifetime ?? {}),
 				id: 'lifetime',
-				planId: process.env.FREEMIUS_PLAN_ID_LIFETIME ?? '',
+				pricingId: process.env.FREEMIUS_PRICING_ID_LIFETIME ?? '',
 			},
 		},
 		checkout: {

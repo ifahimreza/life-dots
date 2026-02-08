@@ -5,7 +5,7 @@ import {useRouter} from "next/navigation";
 import type {SupabaseClient} from "@supabase/supabase-js";
 import config from "../config";
 
-type PlanId = "yearly" | "lifetime";
+type PricingId = "monthly" | "yearly" | "lifetime";
 
 type UpgradeModalProps = {
   isOpen: boolean;
@@ -58,16 +58,27 @@ export default function UpgradeModal({
   onAccessSynced
 }: UpgradeModalProps) {
   const router = useRouter();
-  const [selectedPlan, setSelectedPlan] = useState<PlanId>("lifetime");
+  const [selectedPricing, setSelectedPricing] = useState<PricingId>("lifetime");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const yearlyPrice = Number(config.freemius?.plans?.yearly?.price ?? 18);
-  const lifetimePrice = Number(config.freemius?.plans?.lifetime?.price ?? 48);
+  const monthlyPrice = Number(config.freemius?.pricing?.monthly?.price ?? 4);
+  const yearlyPrice = Number(config.freemius?.pricing?.yearly?.price ?? 18);
+  const lifetimePrice = Number(config.freemius?.pricing?.lifetime?.price ?? 48);
   const yearlyMonthlyPrice = useMemo(() => (yearlyPrice / 12).toFixed(2), [yearlyPrice]);
 
-  const ctaLabel = selectedPlan === "lifetime" ? "Get Lifetime Access" : "Get Yearly Access";
-  const ctaPrice = selectedPlan === "lifetime" ? `$${lifetimePrice}` : `$${yearlyPrice}`;
+  const ctaLabel =
+    selectedPricing === "monthly"
+      ? "Get Monthly Access"
+      : selectedPricing === "yearly"
+        ? "Get Yearly Access"
+        : "Get Lifetime Access";
+  const ctaPrice =
+    selectedPricing === "monthly"
+      ? `$${monthlyPrice}`
+      : selectedPricing === "yearly"
+        ? `$${yearlyPrice}`
+        : `$${lifetimePrice}`;
 
   const handleCheckout = async () => {
     if (isLoading) return;
@@ -118,7 +129,7 @@ export default function UpgradeModal({
           Authorization: `Bearer ${token}`
         },
         body: JSON.stringify({
-          plan: selectedPlan,
+          pricing: selectedPricing,
           userId,
           name: name?.trim() || undefined,
           email: email || undefined
@@ -190,19 +201,43 @@ export default function UpgradeModal({
             Create, export, and keep your timeline forever.
           </p>
 
-          <div className="mt-4 grid gap-2.5 sm:grid-cols-2">
+          <div className="mt-4 grid gap-2.5 sm:grid-cols-3">
             <button
               type="button"
-              onClick={() => setSelectedPlan("yearly")}
+              onClick={() => setSelectedPricing("monthly")}
               className={`rounded-3xl border p-3 text-left transition ${
-                selectedPlan === "yearly"
+                selectedPricing === "monthly"
                   ? "border-[#c96a32] bg-[#fff8f2]"
                   : "border-[#e6e1da] bg-[#fffdfb] hover:border-[#d8d1c7]"
               }`}
             >
               <div
                 className={`inline-flex h-7 w-7 items-center justify-center rounded-full border text-[9px] ${
-                  selectedPlan === "yearly"
+                  selectedPricing === "monthly"
+                    ? "border-[#c96a32] text-[#c96a32]"
+                    : "border-[#d8d1c7] text-transparent"
+                }`}
+              >
+                ●
+              </div>
+              <p className="mt-1 text-sm font-semibold text-[#211d19]">Monthly</p>
+              <p className="mt-1 text-[33px] font-medium leading-none text-[#1f1b18]">${monthlyPrice}</p>
+              <p className="mt-1 text-[13px] text-[#80786f]">/ month</p>
+              <p className="mt-2 text-[13px] text-[#80786f]">Most flexible</p>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setSelectedPricing("yearly")}
+              className={`rounded-3xl border p-3 text-left transition ${
+                selectedPricing === "yearly"
+                  ? "border-[#c96a32] bg-[#fff8f2]"
+                  : "border-[#e6e1da] bg-[#fffdfb] hover:border-[#d8d1c7]"
+              }`}
+            >
+              <div
+                className={`inline-flex h-7 w-7 items-center justify-center rounded-full border text-[9px] ${
+                  selectedPricing === "yearly"
                     ? "border-[#c96a32] text-[#c96a32]"
                     : "border-[#d8d1c7] text-transparent"
                 }`}
@@ -217,9 +252,9 @@ export default function UpgradeModal({
 
             <button
               type="button"
-              onClick={() => setSelectedPlan("lifetime")}
+              onClick={() => setSelectedPricing("lifetime")}
               className={`relative rounded-3xl border p-3 text-left transition ${
-                selectedPlan === "lifetime"
+                selectedPricing === "lifetime"
                   ? "border-[#c96a32] bg-[#fff8f2]"
                   : "border-[#e6e1da] bg-[#fffdfb] hover:border-[#d8d1c7]"
               }`}
@@ -229,7 +264,7 @@ export default function UpgradeModal({
               </span>
               <div
                 className={`inline-flex h-7 w-7 items-center justify-center rounded-full border text-[9px] ${
-                  selectedPlan === "lifetime"
+                  selectedPricing === "lifetime"
                     ? "border-[#c96a32] text-[#c96a32]"
                     : "border-[#d8d1c7] text-transparent"
                 }`}

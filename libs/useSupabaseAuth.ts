@@ -212,8 +212,13 @@ export function useSupabaseAuth({
 
   const signOut = useCallback(async () => {
     if (!supabase) return;
-    await supabase.auth.signOut();
-    clearAuthState();
+    try {
+      await supabase.auth.signOut();
+    } finally {
+      // Always clear local auth state even if remote sign-out fails
+      // (for example after hard-deleting the user server-side).
+      clearAuthState();
+    }
   }, [clearAuthState, supabase]);
 
   return {

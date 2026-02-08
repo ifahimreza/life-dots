@@ -48,7 +48,18 @@ const config = {
 
 	// Public pricing metadata used by UI.
 	freemius: {
-		plans: {
+		plan: {
+			id: 'plus',
+			name: 'DotSpan Plus',
+		},
+		pricing: {
+			monthly: {
+				id: 'monthly',
+				name: 'Plus Monthly',
+				price: Number(process.env.NEXT_PUBLIC_FREEMIUS_PRICE_MONTHLY ?? 4),
+				currency: 'USD',
+				interval: 'month',
+			},
 			yearly: {
 				id: 'yearly',
 				name: 'Plus Yearly',

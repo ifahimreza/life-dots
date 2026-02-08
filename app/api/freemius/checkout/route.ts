@@ -4,7 +4,7 @@ import {createCheckoutLink, getMissingFreemiusConfigKeys} from "../../../../libs
 import {createSupabaseAdminClient} from "../../../../libs/supabaseAdmin";
 
 type CheckoutRequest = {
-  plan?: "yearly" | "lifetime";
+  pricing?: "monthly" | "yearly" | "lifetime";
   email?: string;
   name?: string;
   userId?: string;
@@ -45,7 +45,7 @@ export async function POST(request: Request) {
 
   try {
     const url = await createCheckoutLink({
-      plan: body.plan,
+      pricing: body.pricing,
       email: authData.user.email,
       name:
         body.name ??
